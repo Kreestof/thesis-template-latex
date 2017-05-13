@@ -1,3 +1,10 @@
 %----------------------------------------------------------------------------
 \chapter{Gráfadatbázisok}
 %----------------------------------------------------------------------------
+
+Gráfadatbázisnak nevezünk minden olyan adatbázist, ahol az adat és/vagy a séma gráffal van reprezentálva, és minden adatmanipuláció egy gráftranszformációnak feleltethető meg. Sokféle implementáció terjedt el, ami illeszkedik erre a definícióra. Különbséget tehetünk az alapján hogy a csúcsokban csak egyedeket tárolunk vagy a csúcsok csak azonosítók és az éleken keresztül a leveleken vannak a tulajdonságaik. Másik megközelítés, hogy az éleknek lehetnek-e tulajdonságaik vagy nem, illetve irányított vagy nem irányított a kapcsolat. 
+
+A struktúrájából adódóan olyan adatok leírására alkalmasak leginkább, ahol az egyedek közötti kapcsolat számottevő. Könnyen bővíthető, ugyanis a csúcsok típusaira nincsen megkötés. Az éleken keresztül könnyen lehet navigálni, ezért alkalmasak közösségi hálózatok, keresőmotorok implementálására. A lekérdezések intuitívak a többi elterjedt adatbázisrendszerekhez képest, ezért könnyen átlátható.
+
+\section{Példa gráfadatbázis használatára}
+
