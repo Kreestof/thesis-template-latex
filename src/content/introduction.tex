@@ -4,19 +4,20 @@
 
 Számos adatbázis-kezelő rendszer van a világon. A teljesítmény kulcsfontosságú jelentőséggel bír, főleg, amikor nagyméretű adatbázisokról van szó. Emiatt felmerül a kérdés, hogy sorba lehet-e őket rendezni valamilyen objektív mérce alapján. A problémák sokrétűsége azt mutatja, hogy a felhasználási terület általában nagymértékben befolyásolja az eredményt. Emellett az adatbázis-kezelő rendszereket sokféleképp kategóriába is lehet sorolni, például a matematikai modell vagy a lekérdezés nyelve alapján. Az egy kategóriába eső rendszereket általában könnyebb összehasonlítani, mint olyanokat, amik külön kategóriába esnek. Ezek a problémák szinte lehetetlen feladattá tesznek egy általános összehasonlítást. Észszerűen ezért a legtöbb teljesítménymérés egy bizonyos fajta problémára összpontosul. Egy ilyen feladat lehet a modell-validálás, melynek célja, hogy adott modellen (melyet az adatbázisban tárolunk) megkövetelt kényszereket ellenőrizzen. Ez rendkívül fontos egy fejlesztési folyamat során, mivel visszajelzést ad a programozónak és/vagy a felhasználónak a modell helyességéről. A Train Benchmark célja egy ilyen folyamat szimulálása több adatbázisrendszeren és a teljesítményük mérése, annak kiértékelése.
 
-A Train Benchmark több adatbázis-kezelő rendszerre már meg lett valósítva. Jelen dolgozat célja egy modern adatbázis-kezelő tesztelésének implementálása, a Train Benchmark két adatbázisrendszer-tesztjének futtatása Windows operációs rendszeren és a kapott eredmények összehasonlítása.
+%meg lett valósítva nem túl szép
+A Train Benchmark több adatbázis-kezelő rendszerre már meg lett valósítva. Jelen dolgozat célja egy modern adatbázis-kezelő tesztelésének implementálása, a Train Benchmark két adatbázisrendszer-tesztjének futtatása Windows operációs rendszeren és a kapott eredmények összehasonlítása. A kiválasztott adatbáziskezelő-rendszer a Microsoft által fejlesztett Graph Engine.
 
 \section{A dolgozat felépítése}
 
 Az elkészült dolgozat a következő részekből épül fel:
 
-A 2. fejezetben a Train Benchmark modelljének a működésének elvét mutatnánk be. Kezdve a Train Benchmarkban használt modell elemeivel, közöttük lévő kapcsolattal, majd a megfogalmazott kényszerek részletezésével, aztán a fejlesztési folyamat forgatókönyve, végül pedig azon környezetek (Jena, RDF4J) rövid bemutatása következik, melyeknek tesztjét lefuttattuk.
+A 2. fejezetben a Train Benchmark modelljének a működésének elvét mutatjuk be. Kezdve a Train Benchmarkban használt modell elemeivel, közöttük lévő kapcsolattal, majd a megfogalmazott kényszerek részletezésével, aztán a fejlesztési folyamat forgatókönyve, végül pedig azon környezetek (Jena, RDF4J) rövid bemutatása következik, melyeknek tesztjét lefuttattuk.
 
-A 3. fejezet a gráfadatbázisokról szól. Egy egyszerű példán keresztül megmutatjuk, hogy adott esetben miért lehet gyorsabb és jobb a relációs adatbázisrendszereknél.
+A 3. fejezet az adatbázisrendszerek egy típusáról, a gráfadatbázisokról szól. Egy egyszerű példán keresztül megmutatjuk, hogy adott esetben miért lehet gyorsabb és jobb a relációs adatbázisrendszereknél.
 
 A 4. fejezet a Graph Engine nevű gráfadatbázis-rendszer felépítését és működését taglalja. A 3. fejezetben található példán keresztül mutatjuk be, hogy milyen módon kell használni.
 
-Az 5. fejezetben az általunk elkészített tesztelőprogram implementációját részletezzük. Rövid forráskódokat kiragadva megpróbáljuk általánosan bemutatni, hogy hogyan épül fel. Kiegészítve a Train Benchmarkhoz már elkészült tesztek Windows operációs rendszeren való futtatási problémáinak megoldásával, illetve a fejlesztés során felmerülő nehézségekre való válaszok okainak indoklásával.
+Az 5. fejezetben az általunk elkészített tesztelőprogram implementációját részletezzük. Rövid forráskódokat kiragadva általánosan bemutatjuk, hogy hogyan épül fel. Kiegészítve a Train Benchmarkhoz már elkészült tesztek Windows operációs rendszeren való futtatási problémáinak megoldásával, illetve a fejlesztés során felmerülő nehézségekre való válaszok okainak indoklásával.
 
 %TODO: utolsó két fejezethez tartozó bevezető
 
