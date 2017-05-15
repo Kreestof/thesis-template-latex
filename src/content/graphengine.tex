@@ -60,10 +60,35 @@ A példában egy baráti társaságban lévő emberekről tárolunk adatokat. Ez
 
 \section{Adatelérés}
 
-A Graph Engine fordítás után a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-okat, melyek az adatolvasást és manipulálást könnyítik meg. Ezzel párhuzamosan létrehoz osztályokat, amiket a Visual Studioban lévő IntelliSense is tud kezelni, megkönnyítve a további implementációs munkát. Az \emph{Accessor}-okon keresztül 
+A Graph Engine a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-okat, melyek az adatolvasást és manipulálást könnyítik meg. Ezzel párhuzamosan létrehoz osztályokat, amiket a Visual Studioban lévő IntelliSense is tud kezelni, megkönnyítve a további implementációs munkát. Az \emph{Accessor}-ok használatát is a fenti példán keresztül mutatnánk be. Fordítás után a következő metódusokat tudjuk használni: 
+\begin{itemize}
+	\item \texttt{Global.LocalStorage.IsSzemely(long cellId)} \--- A \emph{cellId} azonosítójú elemről megállapítja, hogy Szemely típusú-e. Visszatérési értéke: \texttt{bool}.
+	\item \texttt{Global.LocalStorage.LoadSzemely(long cellId)} \--- Visszatérési értéke egy Szemely típusú objektum, aminek a CellId-je a függvény bemeneteként megadott paraméter.
+	\item \texttt{Global.LocalStorage.SaveSzemely(\ldots{})} \--- A függvény bemeneti paraméterének megadott adatok alapján elment egy személyt az adatbázisba. Ez a paraméter lehet Szemely típusú objektum, de megadhatjuk felsorolva az osztály mezőit (\texttt{cellId, nev, szemelyiSzam, baratok}) is. Amennyiben létezik az adott \texttt{cellId}-vel rendelkező bejegyzés, akkor felülírja.
+	\item \texttt{Global.LocalStorage.Szemely\_Selector()} \--- Visszatérési értéke egy IEnumerable<Szemely> lista, amiben az adatbázisban szereplő összes személy benne van. Végigiterálva ezen a listán, megkaphatjuk a személyek adatait.
+	\item \texttt{Global.LocalStorage.Szemely\_Accessor\_Selector()} \--- Hasonló a texttt{Szemely\_Selector}-hoz, ellenben IEnumerable<SzemelyAccessor>-ral tér vissza, azaz nem személy osztályú elemekkel, hanem azok \emph{Accessor}-aival.
+	\item \texttt{Global.LocalStorage.UseSzemely(long cellId)} \--- Az adott \emph{cellId}-vel rendelkező személy \emph{Accessor}-át adja vissza. Ezen keresztül tudjuk módosítani a bejegyzést. Használat után mindenképp fel kell szabadítani, ezért \emph{using} blokkba érdemes illeszteni.
+\end{itemize}
+
+Sajnálatos módon a Graph Engine egyelőre nem támogatja az egymásba ágyazott \emph{Accessor}-ok használatát. Emiatt ha például amennyiben két ember adatait szeretnénk összehasonlítani, akkor először az egyik, majd a másik adatait kell kimentenünk a lokális memóriába, majd összehasonlítani. Erre a problémára megoldást nyújthat a \emph{Language-Integrated Query (LINQ)}, illetve \emph{Language Integrated Knowledge Query (LIKQ)} használata, melyek lehetőséget kínálnak lekérdezések írására.
 
 \subsection{\emph{LINQ}}
 
+A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező szolgáltatás, ami megkönnyíti az adatelérést a programozó számára. Célja a nem, vagy csak részben objektum-orientált adatforrások általános célú feldolgozása. Kezdetben az \emph{SQL}- és az \emph{XML} nyelvet támogatta, mivel a relációs adatbázisok és az XML fájlok a két legelterjedtebb, nem objektum-orientált adatforrás.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{figures/JozsefekLINQ.png}
+	\caption{Egy egyszerű LINQ lekérdezés. A József keresztnevű emberek adatait lehet kinyerni így.}
+	\label{fig:LINQ}
+\end{figure}
+
+Egy \emph{LINQ} lekérdezés felépítése hasonló az \emph{SQL} nyelv szintaxisához. A \emph{from, where, orderby, select} kulcsszavaknak a jelentése megegyezik. Legfőbb különbség azonban, hogy míg az \emph{SQL}-nél először azt kell megadni, hogy mit szeretnénk, aztán pedig, hogy honnan, addig a \emph{LINQ}-nél ez fordítva van. Ez nagy előny, mivel így az \emph{IntelliSense} már felajánlja az adott osztály mezőit, függvényeit kiegészítésként, emellett fordítás előtt ellenőrizni lehet az esetleges elgépeléseket. A \emph{select} után megadhatunk \emph{property}-ket, anonym-osztályt, de akár, ahogy a \refstruc{fig:LINQ} mutatja, a teljes osztályt is.
+
+
+
 \subsection{\emph{LIKQ}}
+
+
 
 \section{Példaalkalmazás}
