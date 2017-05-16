@@ -49,7 +49,7 @@ A \emph{TSL}-t külön projektbe kell elhelyezni. Fordítása után egy \emph{dl
 
 \subsection{Példa \emph{TSL} fájlra}
 
-A példában egy baráti társaságban lévő emberekről tárolunk adatokat. Ezek az adatok legyenek a következők minden embernél: név, személyiigazolvány-szám, barátok. Sokféle megoldás létezhet ennek a problémának a leírására, mivel a nevet tárolhatjuk egy \texttt{string}-ben, de akár egy struktúrában is, a személyiigazolvány-szám lehet fix hosszúságú 6 karakter vagy lehet egy változó hosszú \texttt{string}. Esetünkben a név egy struktúra, a  személyiigazolvány-szám pedig \texttt{string} típusú.
+A példában egy baráti társaságban lévő emberekről tárolunk adatokat. Ezek az adatok legyenek a következők minden embernél: név, személyiigazolvány-szám, barátok. Sokféle megoldás létezhet ennek a problémának a leírására, mivel a nevet tárolhatjuk egy \texttt{string}-ben, de akár egy struktúrában is, a személyiigazolvány-szám lehet fix hosszúságú 6 karakter vagy lehet egy változó hosszú \texttt{string}. Esetünkben a név egy struktúra, titulussal, vezetéknévvel és keresztnévvel, a  személyiigazolvány-szám pedig \texttt{string} típusú.
 
 \begin{figure}[ht!]
 	\centering
@@ -85,10 +85,49 @@ A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező sz
 
 Egy \emph{LINQ} lekérdezés felépítése hasonló az \emph{SQL} nyelv szintaxisához. A \emph{from, where, orderby, select} kulcsszavaknak a jelentése megegyezik. Legfőbb különbség azonban, hogy míg az \emph{SQL}-nél először azt kell megadni, hogy mit szeretnénk, aztán pedig, hogy honnan, addig a \emph{LINQ}-nél ez fordítva van. Ez nagy előny, mivel így az \emph{IntelliSense} már felajánlja az adott osztály mezőit, függvényeit kiegészítésként, emellett fordítás előtt ellenőrizni lehet az esetleges elgépeléseket. A \emph{select} után megadhatunk \emph{property}-ket, anonym-osztályt, de akár, ahogy a \refstruc{fig:LINQ} mutatja, a teljes osztályt is.
 
+A Graph Engine nem támogatja teljes mértékben a lekérdezéseket. Számunkra a legnagyobb hátrány az, hogy nem használható a \emph{join} operátor és nem lehet különböző típusú cellákat egy lekérdezésbe kapcsolni. Ennek oka ugyanaz, amiért nem lehet egymásba ágyazott \emph{Accessor}-okat használni. Ez az ok pedig az, hogy egy \emph{Accessor} elérésnél az adatbázis egészére elhelyez egy zárat. A \emph{LINQ} pedig a \emph{join} műveletnél mindkét \emph{Selector}-nál megpróbál elhelyezni zárat.
 
+A \emph{join} művelet hiánya abban az esetben jelenthet problémát, amikor különböző típusú csúcsok között szeretnénk navigálni. Erre a nehézségre és egy lehetséges megoldására mutatunk egy példát a következő szakaszban.
+
+\subsubsection{Példaalkalmazás}
+
+Egészítsük ki az eddigi példánkat azzal, hogy adatokat tárolunk a személyek háziállatairól is. Tároljuk az állat faját nevét és azt, hogy ki a gazdája. Ehhez a \emph{TSL} fájlt a következővel egészítettük ki:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{figures/TarsasagAllatTSL.pdf}
+	\caption{Kiegészítjük a \emph{TSL} fájlunkat ezekkel a sorokkal, hogy az állatokról is tudjunk adatokat tárolni.}
+	\label{fig:TarsasagAllat}
+\end{figure}
+
+Egy kézenfekvő kérdés, hogy egy adott nevű személy háziállatainak a nevét. Ez a látszólag egyszerű kérdés rávilágít arra, hogy miért jelent problémát, hogy nem tudjuk összekapcsolni a különböző típusok \emph{Selector}-át. A kézenfekvő az lenne, ha egy lekérdezésben meg tudnánk ezt tenni, mint ahogy a \ref{fig:Haziallatok} mutatja, ez viszont kizárólag \emph{LINQ} használatával nem lehetséges.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{figures/HaziallatokLINQ.pdf}
+	\caption{Hibás megközelítés, a Graph Engine-be épített \emph{LINQ} ezt nem támogatja.}
+	\label{fig:Haziallatok}
+\end{figure}
+
+Az sem jelent megoldást a problémára, hogy lekérdezzük a \emph{Szemely\_Selector}-ral a kívánt személy \emph{CellId}-ját, majd az \emph{Allat\_Selector}-ral a hozzátartozó háziállatok nevét. Mivel a \emph{Selector}-ok zárat helyeznek el az adatbázison, az első lekérdezés után ki kell menteni az adatokat egy másik változóba, különben a második \emph{Selector} nem fogja tudni elérni az adatbázist. Így a megoldás menete a következő:
+
+\begin{itemize}
+	\item Első \emph{LINQ} lekérdezés. A \emph{Szemely\_Selector} segítségével megkeressük a "Nagy Sándor" nevű személy \emph{CellId}-jét. Ebben a lépésben a \emph{Selector} hívás miatt zár kerül az adatbázisra.
+	\item Létrehozunk egy \emph{long} típusú változót és a kapott \emph{CellId} értékével egyenlővé tesszük.
+	\item Feloldódik az adatbáziszár, ezért következhet a második \emph{LINQ} lekérdezés, ahol a háziállatok \emph{Selector}-át használjuk.
+	\item Végigiterálunk a háziállatokon és kiírjuk őket.
+\end{itemize}
+
+Ez a megkötés rendkívül megnöveli a lekérdezések erőforrásigényét, ugyanis sok esetben az adatokat legalább kétszer kell tárolnunk. A fenti példában csak a személy \emph{CellId}-ját tároltuk lokálisan és az adatbázisban is, de más esetben szükség lehet sok olyan adat lokális tárolására is, amire egyáltalán nincs szükségünk ezáltal fölöslegesen terhelve a memóriát. Emellett a sok lekérdezés a számításigényt is jelentősen növeli.
 
 \subsection{\emph{LIKQ}}
 
+A \emph{Language-Integrated Knowledge Query} (\emph{LIKQ}) egy projekt, melynek célja egy Graph Engine-hez fejlesztett nyelv, mellyel gráfokat lehet bejárni. Szintaxisa miatt könnyebben érthető lekérdezéseket lehet leírni vele, mint a \emph{LINQ} lekérdezéssel. Egy tudásgráfból épül fel, melyen lehet navigálni. A lekérdezések 3 függvényből épülnek fel, ezek egymás után fűzésével lehet leírni egy lekérdezést. A függvények:
 
+\begin{itemize}
+	\item \texttt{StartFrom(long cellId)}
+	\item \texttt{FollowEdge(string s)}
+	\item \texttt{VisitNode(Expression ex)}
+\end{itemize}
 
-\section{Példaalkalmazás}
+Az \emph{Expression ex} egy lambda kifejezést jelent. A dolgozat készítésekor ez a projekt még fejlesztés alatt állt, még nem készült hozzá dokumentáció. 
