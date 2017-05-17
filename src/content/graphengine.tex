@@ -9,6 +9,9 @@ Az elkészített megoldás Microsoft Windows 7 x64 operációs rendszeren, Visua
 
 \section{A Graph Engine felépítése}
 
+%TODO Graph Engine felépítését leírni
+lehetőséget kínál lokális, távoli elérésre
+
 \section{\emph{TSL}}
 
 A \emph{TSL}, azaz \emph{Trinity Specification Language} a Graph Engine gráfséma-leíró nyelve. Az előre definiált adatstruktúra helyett nagy könnyebbséget kínál azáltal, hogy szerveroldalon az adott alkalmazásra specifikus adatstruktúrát adhatunk meg. Szintaxisát tekintve leginkább a C, \cpp{}  és a \Csh{} nyelvre hasonlít.
@@ -45,7 +48,9 @@ A Graph Engine egy ilyen \emph{TSL} fájl alapján építi fel az adatbázis sé
 	\item \texttt{protocol, server, proxy} \--- Távoli adatbázis-elérést lehet velük konfigurálni.
 \end{itemize}
 
-A \emph{TSL}-t külön projektbe kell elhelyezni. Fordítása után egy \emph{dll} könyvtár jön létre, amit a másik \Csh{} projektünkhöz hozzálinkelhetünk. Amennyiben a Graph Engine beépített projektjét használjuk és egy \emph{solution} alatt dolgozunk, akkor ezt a Visual Studio elvégzi helyettünk. 
+A \emph{TSL}-t külön projektbe kell elhelyezni. Fordítása után egy \emph{dll} könyvtár jön létre, amit a másik \Csh{} projektünkhöz hozzálinkelhetünk. Amennyiben a Graph Engine beépített projektjét használjuk és egy \emph{solution} alatt dolgozunk, akkor ezt a Visual Studio elvégzi helyettünk.
+
+Lehetőség van úgynevezett \emph{Attribute}-okat hozzáadnunk a \emph{TSL} fájlhoz. Ezek \emph{string} típusú kulcs-érték párok, melyek a programozó számára információval látják el az egyes tulajdonságokat. Érdemes ilyen módon megjelölni a gráf éleit. Ez csak egy futásidőben elérhető információval látja el a csúcsokat. Szintaxisa \texttt{[kulcs:érték]} alakú. A kettőspont és az érték elhagyható.
 
 \subsection{Példa \emph{TSL} fájlra}
 
@@ -72,7 +77,7 @@ A Graph Engine a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-o
 
 Sajnálatos módon a Graph Engine egyelőre nem támogatja az egymásba ágyazott \emph{Accessor}-ok használatát. Emiatt ha például amennyiben két ember adatait szeretnénk összehasonlítani, akkor először az egyik, majd a másik adatait kell kimentenünk a lokális memóriába, majd összehasonlítani. Erre a problémára megoldást nyújthat a \emph{Language-Integrated Query (LINQ)}, illetve \emph{Language Integrated Knowledge Query (LIKQ)} használata, melyek lehetőséget kínálnak lekérdezések írására.
 
-\subsection{\emph{LINQ}}
+\subsection{\emph{LINQ}} \label{graphenginelinq}
 
 A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező szolgáltatás, ami megkönnyíti az adatelérést a programozó számára. Célja a nem, vagy csak részben objektum-orientált adatforrások általános célú feldolgozása. Kezdetben az \emph{SQL}- és az \emph{XML} nyelvet támogatta, mivel a relációs adatbázisok és az XML fájlok a két legelterjedtebb, nem objektum-orientált adatforrás.
 

@@ -67,11 +67,13 @@ Ebben az esetben azt szimulálja a Train Benchmark, hogy az adatbázisba betölt
 
 \subsection{\emph{Inject}}
 
-Az \emph{Inject} szakaszban véletlenszerű hibainjektálás történik a modellbe és minden ilyen után egy újraellenőrzés következik. Ezáltal lehet mérni, ha egy modellben kis változtatásokat hajtanak végre, akkor az adott adatbázis-kezelő ezt mennyire ismeri fel, ezáltal képes-e a modell kis részét megváltoztatni és esetleg csak ezt újraellenőrizni. A hibainjektálás a különböző kényszerekhez más és más módon zajlik. A \emph{RouteSensor} megsértéséhez egy úthoz tartozó véletlenszerű \emph{requires} élet törlünk, a \emph{SwitchSet} megsértéséhez pedig a megfelelő váltó \emph{currentPosition} tulajdonságát érvénytelen értékre állítjuk.
+Az \emph{Inject} szakaszban véletlenszerű hibainjektálás történik a modellbe és minden ilyen után egy újraellenőrzés következik, majd ez a két lépés ciklikusan ismétlődik valahányszor. Ezáltal lehet mérni, ha egy modellben kis változtatásokat hajtanak végre, akkor az adott adatbázis-kezelő ezt mennyire ismeri fel, ezáltal képes-e a modell kis részét megváltoztatni és esetleg csak ezt újraellenőrizni. A hibainjektálás a különböző kényszerekhez más és más módon zajlik. A \emph{RouteSensor} megsértéséhez egy úthoz tartozó véletlenszerű \emph{requires} élet törlünk, a \emph{SwitchSet} megsértéséhez pedig a megfelelő váltó \emph{currentPosition} tulajdonságát érvénytelen értékre állítjuk.
 
 \subsection{\emph{Repair}}
 
-Ebben a fázisban a hibák kijavításának szimulálása zajlik. Itt is a javítást követően a kényszerek ismételt ellenőrzése következik. A javításhoz a hibabeszúráshoz képest általában sokkal több erőforrásra van szükség, mivel itt először meg is kell keresni a hibát, és csak utána lehet kijavítani. Ezt a \emph{RouteSensor} esetében  a hiányzó \emph{requires} él pótlásával, a \emph{SwitchSet} esetében a váltó \emph{currentPosition}-jének a \emph{SwitchPosition} \emph{position}-jéhez való igazításával lehet megtenni.
+Ebben a fázisban a hibák kijavításának szimulálása zajlik. Itt is a javítást követően a kényszerek ismételt ellenőrzése következik és itt is több javítás-újraellenőrzés lépés van. A javításhoz a hibabeszúráshoz képest általában sokkal több erőforrásra van szükség, mivel itt először meg is kell keresni a hibát, és csak utána lehet kijavítani. Ezt a \emph{RouteSensor} esetében  a hiányzó \emph{requires} él pótlásával, a \emph{SwitchSet} esetében a váltó \emph{currentPosition}-jének a \emph{SwitchPosition} \emph{position}-jéhez való igazításával lehet megtenni.
+
+\section{\emph{Resource Description Framework}}
 
 \section{\emph{Tool}-ok}
 
