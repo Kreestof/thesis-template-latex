@@ -60,8 +60,14 @@ A modellvalidációs osztály a \emph{Validator} nevet viseli. Két függvényb�
 
 \subsubsection{\emph{SwitchSet}}
 
-A \emph{SwitchSet} kényszer ellenőrzéséhez az összes modellben szereplő \emph{Route}-on, melynek kezdetén a \emph{Semaphore} \emph{Signal}-ja \emph{Go} értékű, lévő \emph{SwitchPosition} és a hozzátartozó \emph{Switch} \emph{Position} tulajdonsága meg kell egyezzen. Ezért a függvényben először a \emph{Semaphore}-okon iterálunk végig, majd azokon az utakon, melyeknek kezdőpontja az adott \emph{Semaphore}, végül pedig a hozzá tartozó \emph{SwitchPosition} és az ahhoz tartozó \emph{Switch} tulajdonságait kérjük le. A folyamat forráskódja a ábrán látható.
+A \emph{SwitchSet} kényszer ellenőrzéséhez az összes modellben szereplő \emph{Route}-on, melynek kezdetén a \emph{Semaphore} \emph{Signal}-ja \emph{Go} értékű, lévő \emph{SwitchPosition} és a hozzátartozó \emph{Switch} \emph{Position} tulajdonsága meg kell egyezzen. Ezért a függvényben először a \emph{Semaphore}-okon iterálunk végig, majd azokon az utakon, melyeknek kezdőpontja az adott \emph{Semaphore}, végül pedig a hozzá tartozó \emph{SwitchPosition} és az ahhoz tartozó \emph{Switch} tulajdonságait kérjük le. A folyamat forráskódja a \ref{fig:SwitchSetSource} ábrán látható.
 %TODO ábra
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth, keepaspectratio]{figures/Validator.pdf}
+	\caption{A \emph{SwitchSet} kényszer ellenőrzésének forráskódja.}
+	\label{fig:SwitchSetSource}
+\end{figure}
 
 Több típusú csúcson kell műveleteket végezni, ezáltal a \emph{LINQ}-es lekérdezések eredményét használat előtt el kell tárolni egy lokális változóban a \texttt{ToList()} függvény segítségével. Enélkül a \ref{graphenginelinq} fejezetben tárgyalt okok miatt holtpont alakulna ki. Az egymás utáni \texttt{using} blokkok használatánál is ugyanilyen módszerrel el kell tárolnunk az adott változó értékét.
 
@@ -71,6 +77,36 @@ A modellen történő módosításokat a \emph{Modifier} osztály végzi. Négy 
 
 \subsection{Mérés és az eredmények elmentése}
 
-Minden szakasz futási ideje a \emph{System.Diagnostic.StopWatch} osztály segítségével lett lemérve. A Train Benchmark többi \emph{Tool}-ja $ns$-ban ad eredményt a futás idejéről, azonban két azonos konfigurációjú , egymás után történő futtatás eredménye is legalább 100 $\mu{}s$-mal eltér. Ezen megfontolás miatt az elkészült program futásidő-mérésének pontossága 1 $\mu{}$s. A \emph{StopWatch} osztályban az \texttt{ElapsedTicks} és a \texttt{Frequency} \emph{property}-k segítségével lehet $ms$-nál pontosabb eredményt elérni. 
+Minden szakasz futási ideje a \emph{System.Diagnostic.StopWatch} osztály segítségével lett lemérve. A Train Benchmark többi \emph{Tool}-ja $ns$-ban ad eredményt a futás idejéről, azonban két azonos konfigurációjú , egymás után történő futtatás eredménye is legalább 100 $\mu{}s$-mal eltér. Ezen megfontolás miatt az elkészült program futásidő-mérésének pontossága 1 $\mu{}$s. A \emph{StopWatch} osztályban az \texttt{ElapsedTicks} és a \texttt{Frequency} \emph{property}-k segítségével lehet $ms$-nál pontosabb eredményt elérni.
+
+A méréseket ötször egymás után hajtja végre a program és az eredményt egy \emph{csv} fájlba fűzi bele. Az öt egymás utáni futtatás nagyobb valószínűséggel ad konzisztens eredményt. A \emph{csv} minden sorába egy adott futtatás szakaszának (beolvasás, ellenőrzés, módosítás vagy újraellenőrzés) az eredménye kerül. A felépítése az alábbi oszlopokból áll:
+
+\begin{itemize}
+	\item \emph{Tool}: Annak az adatbázis-rendszernek a neve, amin a programot futtatjuk.
+	\item \emph{Workload}: \emph{Inject} vagy \emph{Repair} lehet, az alapján hogy mit tesztelünk, a hibainjektálást vagy a javítást.
+	\item \emph{Description}: Leírást illeszthetünk ide. Ez az elkészült szoftver futtatása után üres lesz.
+	\item \emph{Model}: A modell neve és mérete kerül ide.
+	\item \emph{Run}: Aktuális futtatás sorszáma 1-től indexelve.
+	\item \emph{Phase}: A futtatott szakasz típusa kerül ide, értéke \emph{Read}, \emph{Check}, \emph{Transformation} vagy \emph{Recheck} lehet.
+	\item \emph{Iteration}: A módosítás és újraellenőrzés szakasz többszörös futtatásának sorszáma. A beolvasás- és a validációs szakaszban nincsen értéke.
+	\item \emph{Time}: Az adott szakasz futtatása alatt eltelt idő $ns$-ban. Nem a teszt kezdete óta eltelt időt jelzi.
+\end{itemize}
+
+A gép konfigurációja, melyen a méréseket végeztük a \ref{tab:System} táblázatban található. A meghajtón több, mint 20 GB szabad hely volt elérhető.
+
+\begin{table}[H]
+	\centering
+	\begin{TAB}(r,20pt,20pt){|c|c|}{|c|c|c|c|c|} 
+		Alaplap & Gigabyte Z87M-D3H \\
+		Processzor & Intel\textregistered{} Core\texttrademark{} i5-4690K CPU @ 3.50GHz \\ 
+		Memória & Kingston 8GB 1600MHz DDR3 Non-ECC CL11 \\
+		Meghajtó & Kingston HyperX 3K 240 GB SSD  \\
+		Operációs rendszer & Windows 7 Ultimate x64 Service Pack 1  \\ 
+	\end{TAB}
+	\caption{A gép konfigurációja}
+	\label{tab:System}
+\end{table}
 
 \section{Többi \emph{Tool} futtatása}
+
+A Train Benchmark már elkészült részei \emph{Linux} rendszeren lettek implementálva, de olyan környezetben készült, hogy ne legyen platformfüggő. Ennek ellenére semmilyen \emph{Windows} rendszeren ezidáig nem volt futtatva. \emph{Windows}-on parancssorból, \emph{Linux}-alapú környezetben terminálból lehet futtatni. Hátrányt jelent, hogy a \emph{Windows 7} parancssori ablakából nem lehet 8191 karakternél hosszabb parancsot futtatni, azonban a teljes Train Benchmark implementáció ennél többet követel meg. Ennek oka, hogy a \emph{Gradle}, melyben a Train Benchmark projektje készült, egymás után fűzi a futtatandó \emph{Java} \emph{class}-ok útvonalát egy hosszú parancsba. Lehetőség van azonban személyre szabottan futtatni. Ez szükségszerű, ugyanis az eredmények összehasonlításához ugyanolyan specifikációk kellenek. Ez azt jelenti, hogy csak a megfelelő kényszereket ellenőrizzük, csak a számunkra fontos adatbázis-kezelő szoftvereken fusson le és ugyanazon a modellen teszteljük, tehát nem kell új modellt generálni. Amennyiben korlátozzuk a futtatást ezekre a paraméterekre, akkor már egy rövidebb, futtatható kód generálódik.

@@ -30,8 +30,7 @@ A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait haszn�
 \section{Kényszerek}
 
 Erre a metamodellre számtalan kényszert meg lehetne követelni úgy, hogy még mindig lehessen olyan modellt alkotni, ami észszerűen nem felelhet meg a valóságnak. A Train Benchmarkban ezért csak összesen 6 kényszer teljesülését követelik meg. Ezek között vannak olyan egyszerűek, mint a \emph{PosLength}, ami azt követeli meg, hogy egy szegmens hossza pozitív legyen, és vannak bonyolultabbak, mint a \emph{ConnectedSegment}, ami azt, hogy 6 egymást követő szegmenst ne felügyeljen egy szenzor. Könnyen belátható, hogy ez utóbbi ellenőrzése egy relációs adatbázisban 7 tábla összekapcsolását követeli meg.
-
-Két kényszert valósítottunk meg, ezért ezt a kettőt mutatnám be részletesebben.
+Két kényszert valósítottunk meg, ezért ezt a kettőt mutatjuk be részletesebben.
 
 \subsection{\emph{RouteSensor}}
 
@@ -86,4 +85,4 @@ A Train Benchmark 10 különböző \emph{Tool}-ra, azaz adatbázis-kezelő szoft
 
 \emph{Subject}, \emph{predicate}, \emph{object} hármas lehet a következő: \emph{Magyarország}, \emph{tengerpart}, \emph{nincs}; míg lehet az is, hogy \emph{Magyarország}, \emph{szomszéd}, \emph{Ausztria}. Míg az első esetben a predicate egy tulajdonságot jelölt, a második esetben egy kapcsolatot egy másik hasonló elemmel.
 
-Az \emph{RDF4J}-ben és a \emph{Jena}-ban az a közös, hogy mindkettő egy Java keretrendszer \emph{rdf} alapú adatok feldolgozására, lekérdezésére és módosítására. Mindkettő \emph{SPARQL} lekérdező nyelvet használ.
+Az \emph{RDF4J}-ben és a \emph{Jena}-ban az a közös, hogy mindkettő egy Java keretrendszer \emph{RDF} alapú adatok feldolgozására, lekérdezésére és módosítására. Mindkettő \emph{SPARQL} lekérdező nyelvet használ.
