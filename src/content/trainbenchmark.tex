@@ -1,17 +1,18 @@
 %----------------------------------------------------------------------------
 \chapter{A Train Benchmark}
 %----------------------------------------------------------------------------
-Egy számítógép által elvégzendő felügyeleti, esetleg irányítási feladat elvégzéséhez általában elkészítünk egy modellt, ami a rendszer egy leírása. A modell a világ képzelt vagy valós elemeit és ezeknek a számunkra fontos tulajdonságait írja le. Egy valós modellezési folyamat során olyan komplex maga a valóság is, hogy képtelenség hiba nélkül elsőre előállítani a modellt. A hibák ellenőrzésére általában ki szoktak kötni kényszereket, melyek olyan megkötések, amik nem lehetséges eseteket zárnak ki. Egy valós fejlesztési folyamat során megalkotnak egy modellt, ami általában nem hibamentes, az előre meghatározott kényszerek sem teljesülnek rájuk. Utána minden fejlesztési szakaszban kijavítanak néhány hibát, majd újraellenőrzik a modellt és ezt ciklikusan folytatják addig, amíg minden kényszernek meg nem felel. Sok esetben ezzel párhuzamosan történik a modell bővítése is, ami újabb hibákat eredményez.
 
-A modell elemeit minden esetben valamilyen adatbázisban tárolják. Mivel az adatokon végzett műveletek többségét támogatják elterjedt adatbázis-kezelő szoftverek, ezért többnyire a fejlesztési folyamatban egy ilyen szoftvert választanak. A Train Benchmark egy ilyen folyamat különböző adatbázis-kezelő szoftvereken való lefuttatását hasonlítja össze, ezzel szimulálva a valós fejlesztést és célja a szoftverek teljesítményének összehasonlítása.
+A Train Benchmark egy projekt, melynek célja adatbázisrendszerek teljesítményének mérése modellvalidációs forgatókönyvek használatával. A modellvalidációs forgatókönyv 4 fázisból épül fel: beolvasás, ellenőrzés, módosítás, újraellenőrzés. Beolvassuk a modellt, ellenőrizzük, hogy megfelelnek-e bizonyos előre meghatározott kényszernek, ezután eszközölünk rajta valamilyen módosítást (javítunk vagy rontunk a modellen), majd ismét elvégzünk rajta egy ellenőrzést. Ezalatt mérjük, hogy az adatbázis-rendszer milyen gyorsan végzi el ezeket a műveleteket, majd az eredményt összehasonlítjuk. 
 
-\section{A modell felépítése}
+\section{A Train Benchmark metamodell}
 
-A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait használja fel egy valós probléma szimulálására. A modell osztályokból épül fel, amik meghatározzák az adott elemnek az általunk fontos tulajdonságok összességét, ezeket tároljuk. Ezek az osztályok a következők:
+A metamodell egy absztrakt nyelv, mellyel a modellről írhatunk le információkat. Az itt szereplő metamodell meghatározza azt, hogy milyen típusú elemekről milyen információt tárolunk, ezenfelül leírja a közöttük lévő kapcsolatot is.
+
+A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait használja fel egy valós probléma szimulálására. A metamodell osztályokból épül fel, amik meghatározzák az adott elemnek az általunk fontos tulajdonságok összességét, ezeket tároljuk. Ezek az osztályok a következők:
 \begin{itemize}
 	\item \emph{RailwayElement}: Minden osztály ennek az osztálynak a leszármazottja. Egyetlen közös tulajdonságot, az egyedi azonosítót tartalmazza.
 	\item \emph{Semaphore}: Jelzi a vonatnak, hogy az adott útszakaszon áthaladhat-e. Az aktuális állapotát tároljuk. (A továbbiakban: szemafor)
-	\item \emph{TrackElement}: A sípálya legkisebb számunkra fontos alkotóelemei, a \emph{Segment} és a \emph{Switch} ősosztálya.
+	\item \emph{TrackElement}: A sínpálya legkisebb számunkra fontos alkotóelemei, a \emph{Segment} és a \emph{Switch} ősosztálya.
 	\item \emph{Segment}: Az útnak egy kisebb része, ami már megfigyelhető szenzorok által. A modellben szereplő tulajdonsága a hossza. (A továbbiakban: útszakasz)
 	\item \emph{Switch}: Két útszakasz között helyezkedik el és meghatározza azt, hogy merre halad tovább a vonat, amikor ideér. (A továbbiakban váltó)
 	\item \emph{Route}: Egy vasúti sínpár szakasza két szemafor között. útszakaszokból és váltókból áll össze. Azt tároljuk róla, hogy aktív-e, azaz, hogy az összes váltó olyan állásban van, hogy a vonat ezen az útvonalon halad végig. (A továbbiakban: út)
@@ -21,7 +22,7 @@ A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait haszn�
 	\item \emph{SwitchPosition}: A váltó az úthoz mért relatív állását mutatja, azaz, hogy a váltónak merre kell állnia, hogy a szegmenseken végighaladó vonat az adott úton haladjon. 
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
 	\includegraphics[width=\linewidth, keepaspectratio]{figures/model.pdf}
 	\caption{A Train Benchmark modellje}
 	\label{fig:ModelDiagram}
@@ -29,12 +30,12 @@ A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait haszn�
 
 \section{Kényszerek}
 
-Erre a metamodellre számtalan kényszert meg lehetne követelni úgy, hogy még mindig lehessen olyan modellt alkotni, ami észszerűen nem felelhet meg a valóságnak. A Train Benchmarkban ezért csak összesen 6 kényszer teljesülését követelik meg. Ezek között vannak olyan egyszerűek, mint a \emph{PosLength}, ami azt követeli meg, hogy egy szegmens hossza pozitív legyen, és vannak bonyolultabbak, mint a \emph{ConnectedSegment}, ami azt, hogy 6 egymást követő szegmenst ne felügyeljen egy szenzor. Könnyen belátható, hogy ez utóbbi ellenőrzése egy relációs adatbázisban 7 tábla összekapcsolását követeli meg.
+A Train Benchmarkban összesen 6 kényszer teljesülését követelik meg. Ezek között vannak olyan egyszerűek, mint a \emph{PosLength}, ami azt követeli meg, hogy egy szegmens hossza pozitív legyen, és vannak bonyolultabbak, mint a \emph{ConnectedSegment}, ami azt, hogy 6 egymást követő szegmenst ne felügyeljen egy szenzor. Ez utóbbi ellenőrzése egy olyan relációs adatbázisban, ahol minden osztályhoz egy tábla tartozik, 7 tábla összekapcsolását követeli meg.
 Két kényszert valósítottunk meg, ezért ezt a kettőt mutatjuk be részletesebben.
 
-\subsection{\emph{RouteSensor}}
+\subsection{RouteSensor}
 
-Az utak és a rajtuk található váltók között nincs közvetlen kapcsolat. Az utakhoz csak a \emph{SwitchPosition} kapcsolódik, egy \emph{SwitchPosition} pedig pontosan egy váltóhoz tartozik. Ezáltal, ha közvetve is, de egy úthoz a rajta található váltókat hozzá lehet rendelni. A \emph{RouteSensor} azt követeli meg, hogy az úton található váltókhoz ne tartozhasson érzékelő úgy, hogy az út és az érzékelő között ne legyen kapcsolat.
+Az utak és a rajtuk található váltók között nincs közvetlen kapcsolat. Az utakhoz csak a \emph{SwitchPosition} kapcsolódik, egy \emph{SwitchPosition} pedig pontosan egy váltóhoz tartozik. Ezáltal, ha közvetve is, de egy úthoz a rajta található váltókat hozzá lehet rendelni. A \emph{RouteSensor} azt követeli meg, hogy az úton található váltókhoz ne tartozhasson érzékelő úgy, hogy az út és az érzékelő között ne legyen kapcsolat. A modellben ez a \ref{fig:RouteSensor} ábrán látható módon jelenik meg. Amennyiben a kérdőjellel ellátott él hiányzik, akkor a kényszer nem teljesül.
 
 \begin{figure}[!ht]
 	\centering
@@ -43,9 +44,9 @@ Az utak és a rajtuk található váltók között nincs közvetlen kapcsolat. A
 	\label{fig:RouteSensor}
 \end{figure}
 
-\subsection{\emph{SwitchSet}}
+\subsection{SwitchSet}
 
-A \emph{SwitchSet} kényszer teljesülésének feltétele, hogy amikor egy út aktív és az elején található szemafor szabad jelzést ad, akkor az összes váltónak olyan állásban kell lennie, hogy a vonat az adott úton haladjon végig.
+A \emph{SwitchSet} kényszer teljesülésének feltétele, hogy amikor egy út aktív és az elején található szemafor szabad jelzést ad, akkor az összes váltónak olyan állásban kell lennie, hogy a vonat az adott úton haladjon végig. Amennyiben nem így lenne, a vonat más útvonalon haladna végig, tehát nem lenne igaz, hogy az út aktív. A modellben ezt a \ref{fig:SwitchSet} ábrán szereplő elemek ellenőrzésével lehet észrevenni.
 
 \begin{figure}[!ht]
 	\centering
@@ -58,25 +59,23 @@ A \emph{SwitchSet} kényszer teljesülésének feltétele, hogy amikor egy út a
 
 \section{A fejlesztés lépései}
 
-A valóságban egy ilyen modell folyamatosan bővül, azáltal, hogy új sínpályákat építenek, felújítják a régieket, az állomásokat. Ezáltal a számítógépes modellt is bővíteni kell, ami programozók feladata. Ilyen esetben előfordulnak hibák, amiket javítani kell. Ennek a szimulálására a Train Benchmark 3 különböző szcenáriót különböztet meg: \emph{Batch}, \emph{Inject}, \emph{Repair}.
+A valóságban egy ilyen modell folyamatosan bővül, azáltal, hogy új sínpályák építését-, a régiek felújítását tervezik. Ezáltal a számítógépes modellt is bővíteni kell, ami programozók feladata. Ilyen esetben előfordulnak hibák, amiket javítani kell. Ennek a szimulálására a Train Benchmark 3 különböző szcenáriót különböztet meg: \emph{Batch}, \emph{Inject}, \emph{Repair}.
 
-\subsection{\emph{Batch}}
+\subsection{Batch}
 
-Ebben az esetben azt szimulálja a Train Benchmark, hogy az adatbázisba betöltenek egy modellt és ellenőrzik a kényszereket. Ez a fejlesztés első szakasza. A tesztelés célja mérni, hogy milyen gyorsan lehet egy már kész modellt importálni és a kényszereket először, mindenféle háttértudás nélkül ellenőrizni.
+Ebben az esetben azt szimulálja a Train Benchmark, hogy az adatbázisba betöltenek egy modellt és ellenőrzik a kényszereket. Ez a validáció első szakasza. A kiértékelés ezen szakaszának célja mérni, hogy milyen gyorsan lehet egy már kész modellt importálni és a kényszereket először. A további lépések folyamán lehet információnk arról, hogy a már az adatbázisban lévő adatok korábban mennyire feleltek meg a kényszereknek, azonban itt még nincs.
 
-\subsection{\emph{Inject}}
+\subsection{Inject}
 
-Az \emph{Inject} szakaszban véletlenszerű hibainjektálás történik a modellbe és minden ilyen után egy újraellenőrzés következik, majd ez a két lépés ciklikusan ismétlődik valahányszor. Ezáltal lehet mérni, ha egy modellben kis változtatásokat hajtanak végre, akkor az adott adatbázis-kezelő ezt mennyire ismeri fel, ezáltal képes-e a modell kis részét megváltoztatni és esetleg csak ezt újraellenőrizni. A hibainjektálás a különböző kényszerekhez más és más módon zajlik. A \emph{RouteSensor} megsértéséhez egy úthoz tartozó véletlenszerű \emph{requires} élet törlünk, a \emph{SwitchSet} megsértéséhez pedig a megfelelő váltó \emph{currentPosition} tulajdonságát érvénytelen értékre állítjuk.
+Az \emph{Inject} szakaszban véletlenszerű hibainjektálás történik a modellbe és minden ilyen után egy újraellenőrzés következik, majd ez a két lépés ciklikusan ismétlődik egy paraméter által meghatározott érték szerint. Ezáltal lehet mérni, ha egy modellben kis változtatásokat hajtanak végre, akkor az adott adatbázis-kezelő ezt milyen gyorsan végzi el. Képes-e a modell kis részét megváltoztatni vagy ilyenkor az egészen műveletet kell végezni. A hibainjektálás a különböző kényszerekhez más és más módon zajlik. A \emph{RouteSensor} megsértéséhez egy úthoz tartozó véletlenszerű \emph{requires} élet törlünk, a \emph{SwitchSet} megsértéséhez pedig a megfelelő váltó \emph{currentPosition} tulajdonságát érvénytelen értékre állítjuk.
 
-\subsection{\emph{Repair}}
+\subsection{Repair}
 
-Ebben a fázisban a hibák kijavításának szimulálása zajlik. Itt is a javítást követően a kényszerek ismételt ellenőrzése következik és itt is több javítás-újraellenőrzés lépés van. A javításhoz a hibabeszúráshoz képest általában sokkal több erőforrásra van szükség, mivel itt először meg is kell keresni a hibát, és csak utána lehet kijavítani. Ezt a \emph{RouteSensor} esetében  a hiányzó \emph{requires} él pótlásával, a \emph{SwitchSet} esetében a váltó \emph{currentPosition}-jének a \emph{SwitchPosition} \emph{position}-jéhez való igazításával lehet megtenni.
+Ebben a fázisban a hibák kijavításának szimulálása zajlik. Itt is a javítást követően a kényszerek ismételt ellenőrzése következik és hasonlóan az \emph{Inject} lépéshez, itt is több javítás-újraellenőrzés lépés van. A javításhoz a hibabeszúráshoz képest általában sokkal több erőforrásra van szükség, mivel itt először meg is kell keresni a hibát, és csak utána lehet kijavítani. Ezt a \emph{RouteSensor} esetében  a hiányzó \emph{requires} él pótlásával, a \emph{SwitchSet} esetében a váltó \emph{currentPosition}-jének a \emph{SwitchPosition} \emph{position}-jéhez való igazításával lehet megtenni.
 
-\section{\emph{Resource Description Framework}}
+\section{Resource Description Framework}
 
-\section{\emph{Tool}-ok}
-
-A Train Benchmark 10 különböző \emph{Tool}-ra, azaz adatbázis-kezelő szoftverre készült el. Ezek között található a napjainkban legelterjedtebb relációs adatbázis-kezelő, \emph{Eclipse Modeling Framework}-öt használó, illetve \emph{RDF}-alapú és gráfadatbázis is. A dolgozat ezek közül az \emph{RDF}-alapú Jena és  RDF4J futtatását követelte meg, így ezeket emelném ki. Az \emph{RDF} egy egyszerű gráfmodell leíró nyelv adatok közlésére a világhálón. Nagy előnye, hogy akkor is összefűzhető két ilyen módon leírt modell, ha különböző sémára épülnek. Mindezt úgy teszi lehetővé, hogy adathármasokat (\emph{triple}) tárol, ami a következőkből épül fel:
+A \emph{Resource Description Framework} (\emph{RDF}) egy leíró keretrendszer, amelyet adatok reprezentálására alkalmas. Elsődleges célja számítógépek közötti információcsere, nem az emberi feldolgozás. Ez egy általános célú keretrendszer, ezáltal különböző alkalmazások között is alkalmas információcserére. Többféle szintaxisa létezik, ebből a \emph{Turtle}-t emeljük ki, mert a Train Benchmark \emph{RDF} alapú eszközei ezt használják. A \emph{Turtle} adathármasokat (\emph{triple}) tárol, ami a következőkből épül fel:
 \begin{itemize}
 	\item \emph{subject}: Az adathármas alanya, rá vonatkozik a \emph{triple}-ben tárolt adat.
 	\item \emph{predicate}: Tulajdonság, a \emph{subject} és az \emph{object} közötti kapcsolat típusát írja le.
@@ -85,4 +84,7 @@ A Train Benchmark 10 különböző \emph{Tool}-ra, azaz adatbázis-kezelő szoft
 
 \emph{Subject}, \emph{predicate}, \emph{object} hármas lehet a következő: \emph{Magyarország}, \emph{tengerpart}, \emph{nincs}; míg lehet az is, hogy \emph{Magyarország}, \emph{szomszéd}, \emph{Ausztria}. Míg az első esetben a predicate egy tulajdonságot jelölt, a második esetben egy kapcsolatot egy másik hasonló elemmel.
 
+\section{Létező Train Benchmark implementációk}
+
+A Train Benchmark 10 különböző eszközre, azaz adatbázis-kezelő szoftverre készült el. Ezek között található a napjainkban legelterjedtebb relációs adatbázis-kezelő, \emph{Eclipse Modeling Framework}-öt használó, illetve \emph{RDF}-alapú és gráfadatbázis is. A dolgozat ezek közül az \emph{RDF}-alapú Jena és  RDF4J futtatását követelte meg.
 Az \emph{RDF4J}-ben és a \emph{Jena}-ban az a közös, hogy mindkettő egy Java keretrendszer \emph{RDF} alapú adatok feldolgozására, lekérdezésére és módosítására. Mindkettő \emph{SPARQL} lekérdező nyelvet használ.

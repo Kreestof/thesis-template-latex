@@ -9,10 +9,10 @@ Az elkészített megoldás Microsoft Windows 7 x64 operációs rendszeren, Visua
 
 \section{A Graph Engine felépítése}
 
-%TODO Graph Engine felépítését leírni
-lehetőséget kínál lokális, távoli elérésre
+A Graph Engine a számítógépek feladatkörét tekintve három részből áll. Vannak \emph{client}-ek, \emph{proxy}-k és \emph{slave}-k. A \emph{slave}-k hálózatba kötött szerver számítógépek, amik az adattárolásért és a lekérdezések feldolgozásáért felelősek, egymással egy hálózaton kommunikálnak. A \emph{client}-ek felelőssége egy felhasználói felületet adni az adatbázishoz. A \emph{proxy}-k az üzenetek kezelését végzik, de nem feltétlenül szükségesek a kommunikációhoz, a \emph{client}-ek is képesek közvetlenül a szerverrel kommunikálni. A Graph Engine lehetőséget kínál mindezen szerepek egy számítógépen való futtatásához is.
 
-\section{\emph{TSL}}
+
+\section{TSL}
 
 A \emph{TSL}, azaz \emph{Trinity Specification Language} a Graph Engine gráfséma-leíró nyelve. Az előre definiált adatstruktúra helyett nagy könnyebbséget kínál azáltal, hogy szerveroldalon az adott alkalmazásra specifikus adatstruktúrát adhatunk meg. Szintaxisát tekintve leginkább a C, \cpp{}  és a \Csh{} nyelvre hasonlít.
 
@@ -33,7 +33,7 @@ A \emph{TSL} lehetőséget kínál sokfajta beépített típus használatára, m
 	\item \texttt{Guid} \--- 128 bites egyedi azonosító
 \end{itemize}
 
-A Graph Engine egy ilyen \emph{TSL} fájl alapján építi fel az adatbázis sémáját. Ennek a fájlnak a kiterjesztési \emph{.tsl} és a következő elemekből épül fel:
+A Graph Engine egy ilyen \emph{TSL} fájl alapján építi fel az adatbázis sémáját. Ennek a fájlnak a kiterjesztése \emph{.tsl} és a következő elemekből épül fel:
 \begin{itemize}
 	\item \texttt{include \ldots{}} \--- Az \emph{include} után megadott fájlt ennek a fájlnak az elejére fűzi.
 	\item \texttt{enum\{\ldots{} \}} \--- Felsorolás típust írhatunk le benne hasonlóan, mint C-ben.
@@ -52,11 +52,11 @@ A \emph{TSL}-t külön projektbe kell elhelyezni. Fordítása után egy \emph{dl
 
 Lehetőség van úgynevezett \emph{Attribute}-okat hozzáadnunk a \emph{TSL} fájlhoz. Ezek \emph{string} típusú kulcs-érték párok, melyek a programozó számára információval látják el az egyes tulajdonságokat. Érdemes ilyen módon megjelölni a gráf éleit. Ez csak egy futásidőben elérhető információval látja el a csúcsokat. Szintaxisa \texttt{[kulcs:érték]} alakú. A kettőspont és az érték elhagyható.
 
-\subsection{Példa \emph{TSL} fájlra}
+\subsection{Példa TSL fájlra}
 
 A példában egy baráti társaságban lévő emberekről tárolunk adatokat. Ezek az adatok legyenek a következők minden embernél: név, személyiigazolvány-szám, barátok. Sokféle megoldás létezhet ennek a problémának a leírására, mivel a nevet tárolhatjuk egy \texttt{string}-ben, de akár egy struktúrában is, a személyiigazolvány-szám lehet fix hosszúságú 6 karakter vagy lehet egy változó hosszú \texttt{string}. Esetünkben a név egy struktúra, titulussal, vezetéknévvel és keresztnévvel, a  személyiigazolvány-szám pedig \texttt{string} típusú.
 
-\begin{figure}[ht!]
+\begin{figure}[H]
 	\centering
 	\includegraphics[]{figures/TarsasagTSL.pdf}
 	\caption{Példa TSL használatára.}
@@ -65,19 +65,19 @@ A példában egy baráti társaságban lévő emberekről tárolunk adatokat. Ez
 
 \section{Adatelérés}
 
-A Graph Engine a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-okat, melyek az adatolvasást és manipulálást könnyítik meg. Ezzel párhuzamosan létrehoz osztályokat, amiket a Visual Studioban lévő IntelliSense is tud kezelni, megkönnyítve a további implementációs munkát. Az \emph{Accessor}-ok használatát is a fenti példán keresztül mutatnánk be. Fordítás után a következő metódusokat tudjuk használni: 
+A Graph Engine a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-okat, melyek az adatolvasást és manipulálást könnyítik meg. Ezzel párhuzamosan létrehoz osztályokat, amiket a Visual Studioban lévő IntelliSense is tud kezelni, megkönnyítve a további implementációs munkát. Az \emph{Accessor}-ok használatát is a fenti példán keresztül mutatjuk be. Fordítás után a következő metódusokat tudjuk használni: 
 \begin{itemize}
 	\item \texttt{Global.LocalStorage.IsSzemely(long cellId)} \--- A \emph{cellId} azonosítójú elemről megállapítja, hogy Szemely típusú-e. Visszatérési értéke: \texttt{bool}.
 	\item \texttt{Global.LocalStorage.LoadSzemely(long cellId)} \--- Visszatérési értéke egy Szemely típusú objektum, aminek a CellId-je a függvény bemeneteként megadott paraméter.
 	\item \texttt{Global.LocalStorage.SaveSzemely(\ldots{})} \--- A függvény bemeneti paraméterének megadott adatok alapján elment egy személyt az adatbázisba. Ez a paraméter lehet Szemely típusú objektum, de megadhatjuk felsorolva az osztály mezőit (\texttt{cellId, nev, szemelyiSzam, baratok}) is. Amennyiben létezik az adott \texttt{cellId}-vel rendelkező bejegyzés, akkor felülírja.
 	\item \texttt{Global.LocalStorage.Szemely\_Selector()} \--- Visszatérési értéke egy IEnumerable<Szemely> lista, amiben az adatbázisban szereplő összes személy benne van. Végigiterálva ezen a listán, megkaphatjuk a személyek adatait.
-	\item \texttt{Global.LocalStorage.Szemely\_Accessor\_Selector()} \--- Hasonló a texttt{Szemely\_Selector}-hoz, ellenben IEnumerable<SzemelyAccessor>-ral tér vissza, azaz nem személy osztályú elemekkel, hanem azok \emph{Accessor}-aival.
+	\item \texttt{Global.LocalStorage.Szemely\_Accessor\_Selector()} \--- Hasonló a \texttt{Szemely\_Selector}-hoz, ellenben IEnumerable<SzemelyAccessor>-ral tér vissza, azaz nem személy osztályú elemekkel, hanem azok \emph{Accessor}-aival.
 	\item \texttt{Global.LocalStorage.UseSzemely(long cellId)} \--- Az adott \emph{cellId}-vel rendelkező személy \emph{Accessor}-át adja vissza. Ezen keresztül tudjuk módosítani a bejegyzést. Használat után mindenképp fel kell szabadítani, ezért \emph{using} blokkba érdemes illeszteni.
 \end{itemize}
 
-Sajnálatos módon a Graph Engine egyelőre nem támogatja az egymásba ágyazott \emph{Accessor}-ok használatát. Emiatt ha például amennyiben két ember adatait szeretnénk összehasonlítani, akkor először az egyik, majd a másik adatait kell kimentenünk a lokális memóriába, majd összehasonlítani. Erre a problémára megoldást nyújthat a \emph{Language-Integrated Query (LINQ)}, illetve \emph{Language Integrated Knowledge Query (LIKQ)} használata, melyek lehetőséget kínálnak lekérdezések írására.
+Sajnálatos módon a Graph Engine egyelőre nem támogatja az egymásba ágyazott \emph{Accessor}-ok használatát. Emiatt amennyiben két ember adatait szeretnénk összehasonlítani, akkor először az egyik, majd a másik adatait kell kimentenünk a lokális memóriába, majd összehasonlítani. Erre a problémára megoldást nyújthat a \emph{Language-Integrated Query (LINQ)}, illetve \emph{Language Integrated Knowledge Query (LIKQ)} használata, melyek lehetőséget kínálnak lekérdezések írására.
 
-\subsection{\emph{LINQ}} \label{graphenginelinq}
+\subsection{LINQ} \label{graphenginelinq}
 
 A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező szolgáltatás, ami megkönnyíti az adatelérést a programozó számára. Célja a nem, vagy csak részben objektum-orientált adatforrások általános célú feldolgozása. Kezdetben az \emph{SQL}- és az \emph{XML} nyelvet támogatta, mivel a relációs adatbázisok és az XML fájlok a két legelterjedtebb, nem objektum-orientált adatforrás.
 
@@ -88,15 +88,15 @@ A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező sz
 	\label{fig:LINQ}
 \end{figure}
 
-Egy \emph{LINQ} lekérdezés felépítése hasonló az \emph{SQL} nyelv szintaxisához. A \emph{from, where, orderby, select} kulcsszavaknak a jelentése megegyezik. Legfőbb különbség azonban, hogy míg az \emph{SQL}-nél először azt kell megadni, hogy mit szeretnénk, aztán pedig, hogy honnan, addig a \emph{LINQ}-nél ez fordítva van. Ez nagy előny, mivel így az \emph{IntelliSense} már felajánlja az adott osztály mezőit, függvényeit kiegészítésként, emellett fordítás előtt ellenőrizni lehet az esetleges elgépeléseket. A \emph{select} után megadhatunk \emph{property}-ket, anonym-osztályt, de akár, ahogy a \refstruc{fig:LINQ} mutatja, a teljes osztályt is.
+A \ref{fig:LINQ} ábrán láthatunk egy példát \emph{LINQ} lekérdezésre. Felépítése hasonló az \emph{SQL} nyelv szintaxisához. A \emph{from, where, orderby, select} kulcsszavaknak a jelentése megegyezik. Legfőbb különbség azonban, hogy míg az \emph{SQL}-nél először azt kell megadni, hogy mit szeretnénk, aztán pedig, hogy honnan, addig a \emph{LINQ}-nél ez fordítva van. Ez nagy előny, mivel így az \emph{IntelliSense} már felajánlja az adott osztály mezőit, függvényeit kiegészítésként, emellett fordítás előtt ellenőrizni lehet az esetleges elgépeléseket. A \emph{select} után megadhatunk \emph{property}-ket, anonym-osztályt, de akár, ahogy a \refstruc{fig:LINQ} mutatja, a teljes osztályt is.
 
-A Graph Engine nem támogatja teljes mértékben a lekérdezéseket. Számunkra a legnagyobb hátrány az, hogy nem használható a \emph{join} operátor és nem lehet különböző típusú cellákat egy lekérdezésbe kapcsolni. Ennek oka ugyanaz, amiért nem lehet egymásba ágyazott \emph{Accessor}-okat használni. Ez az ok pedig az, hogy egy \emph{Accessor} elérésnél az adatbázis egészére elhelyez egy zárat. A \emph{LINQ} pedig a \emph{join} műveletnél mindkét \emph{Selector}-nál megpróbál elhelyezni zárat.
+A Graph Engine nem támogatja teljes mértékben a lekérdezéseket. Számunkra a legnagyobb hátrány az, hogy nem használható a \emph{join} operátor és nem lehet különböző típusú cellákat egy lekérdezésbe kapcsolni. Ennek oka ugyanaz, amiért nem lehet egymásba ágyazott \emph{Accessor}-okat használni. Ez pedig az, hogy egy \emph{Accessor} elérésnél az adatbázis egészére elhelyez egy zárat. A \emph{LINQ} pedig a \emph{join} műveletnél mindkét \emph{Selector}-nál megpróbál elhelyezni zárat.
 
 A \emph{join} művelet hiánya abban az esetben jelenthet problémát, amikor különböző típusú csúcsok között szeretnénk navigálni. Erre a nehézségre és egy lehetséges megoldására mutatunk egy példát a következő szakaszban.
 
 \subsubsection{Példaalkalmazás}
 
-Egészítsük ki az eddigi példánkat azzal, hogy adatokat tárolunk a személyek háziállatairól is. Tároljuk az állat faját nevét és azt, hogy ki a gazdája. Ehhez a \emph{TSL} fájlt a következővel egészítettük ki:
+Egészítsük ki az eddigi példánkat azzal, hogy adatokat tárolunk a személyek háziállatairól is. Tároljuk az állat faját nevét és azt, hogy ki a gazdája. Ehhez a \emph{TSL} fájlt a következőképpen egészítettük ki:
 
 \begin{figure}[H]
 	\centering
@@ -105,12 +105,12 @@ Egészítsük ki az eddigi példánkat azzal, hogy adatokat tárolunk a személy
 	\label{fig:TarsasagAllat}
 \end{figure}
 
-Egy kézenfekvő kérdés, hogy egy adott nevű személy háziállatainak a nevét. Ez a látszólag egyszerű kérdés rávilágít arra, hogy miért jelent problémát, hogy nem tudjuk összekapcsolni a különböző típusok \emph{Selector}-át. A kézenfekvő az lenne, ha egy lekérdezésben meg tudnánk ezt tenni, mint ahogy a \ref{fig:Haziallatok} mutatja, ez viszont kizárólag \emph{LINQ} használatával nem lehetséges.
+Egy kézenfekvő kérdés, hogy egy adott nevű személy háziállatait hogy hívják. Ez a látszólag egyszerű kérdés rávilágít arra, hogy miért jelent problémát, hogy nem tudjuk összekapcsolni a különböző típusok \emph{Selector}-át. A nyilvánvaló az lenne, ha egy lekérdezésben meg tudnánk ezt tenni, mint ahogy a \ref{fig:Haziallatok} mutatja, ez viszont kizárólag \emph{LINQ} használatával nem lehetséges.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[]{figures/HaziallatokLINQ.pdf}
-	\caption{Hibás megközelítés, a Graph Engine-be épített \emph{LINQ} ezt nem támogatja.}
+	\caption{Egy nem támogatott \emph{LINQ} lekérdezés.}
 	\label{fig:Haziallatok}
 \end{figure}
 
@@ -125,7 +125,7 @@ Az sem jelent megoldást a problémára, hogy lekérdezzük a \emph{Szemely\_Sel
 
 Ez a megkötés rendkívül megnöveli a lekérdezések erőforrásigényét, ugyanis sok esetben az adatokat legalább kétszer kell tárolnunk. A fenti példában csak a személy \emph{CellId}-ját tároltuk lokálisan és az adatbázisban is, de más esetben szükség lehet sok olyan adat lokális tárolására is, amire egyáltalán nincs szükségünk ezáltal fölöslegesen terhelve a memóriát. Emellett a sok lekérdezés a számításigényt is jelentősen növeli.
 
-\subsection{\emph{LIKQ}}
+\subsection{LIKQ}
 
 A \emph{Language-Integrated Knowledge Query} (\emph{LIKQ}) egy projekt, melynek célja egy Graph Engine-hez fejlesztett nyelv, mellyel gráfokat lehet bejárni. Szintaxisa miatt könnyebben érthető lekérdezéseket lehet leírni vele, mint a \emph{LINQ} lekérdezéssel. Egy tudásgráfból épül fel, melyen lehet navigálni. A lekérdezések 3 függvényből épülnek fel, ezek egymás után fűzésével lehet leírni egy lekérdezést. A függvények:
 
@@ -135,4 +135,4 @@ A \emph{Language-Integrated Knowledge Query} (\emph{LIKQ}) egy projekt, melynek 
 	\item \texttt{VisitNode(Expression ex)}
 \end{itemize}
 
-Az \emph{Expression ex} egy lambda kifejezést jelent. A dolgozat készítésekor ez a projekt még fejlesztés alatt állt, még nem készült hozzá dokumentáció. 
+Az \emph{Expression ex} egy lambda kifejezést jelent. A dolgozat készítésekor ez a projekt még fejlesztés alatt állt, még nem készült hozzá dokumentáció, ellenben a projekt nyílt forráskódú, így lehetőség van a forráskód tanulmányozására. Ez nem vezetett eredményre, a legegyszerűbb lekérdezésekre sem adott eredményt, \emph{System.NullReferenceException} kivételt dobott minden esetben.

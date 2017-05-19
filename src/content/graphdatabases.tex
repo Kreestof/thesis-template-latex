@@ -4,7 +4,7 @@
 
 Gráfadatbázisnak nevezünk minden olyan adatbázist, ahol az adat és/vagy a séma gráffal van reprezentálva, és minden adatmanipuláció egy gráftranszformációnak feleltethető meg. Sokféle implementáció terjedt el, ami illeszkedik erre a definícióra. Különbséget tehetünk az alapján hogy a csúcsokban csak egyedeket tárolunk vagy a csúcsok csak azonosítók és az éleken keresztül a leveleken vannak a tulajdonságaik. Másik megközelítés, hogy az éleknek lehetnek-e tulajdonságaik vagy nem, illetve irányított vagy nem irányított a kapcsolat. 
 
-A struktúrájából adódóan olyan adatok leírására alkalmasak leginkább, ahol az egyedek közötti kapcsolat számottevő. Könnyen bővíthető, ugyanis a csúcsok típusaira nincsen megkötés. Az éleken keresztül könnyen lehet navigálni, ezért alkalmasak közösségi hálózatok, keresőmotorok implementálására. A lekérdezések többnyire intuitívak a többi elterjedt adatbázisrendszerekhez képest, ezért könnyen átlátható.
+A struktúrájából adódóan olyan adatok leírására alkalmasak leginkább, ahol az egyedek közötti kapcsolat számottevő. Az éleken keresztül könnyen lehet navigálni, ezért alkalmasak közösségi hálózatok, keresőmotorok implementálására. 
 
 \section{Példa gráfadatbázis használatára}
 
@@ -27,12 +27,12 @@ Amennyiben egy személy barátainak nevét szeretnénk megkapni, akkor ennek a r
 
 \begin{equation}
 \begin{split}
-\{t\ | Szem\acute{e}ly(t) \wedge{} (\exists{}u)Bar\acute{a}tok(u) \wedge{} (\exists{}v)Szem\acute{e}ly(v) \wedge{} \\ v[1] = \textquoteright{}uniqueid\textquoteright{} \wedge{} 
+\{t^{(3)}\ | Szem\acute{e}ly(t) \wedge{} (\exists{}u)Bar\acute{a}tok(u) \wedge{} (\exists{}v)Szem\acute{e}ly(v) \wedge{} \\ v[1] = \textquoteright{}uniqueid\textquoteright{} \wedge{} 
 t[1]=u[2] \wedge{}u[1]=v[1]      \}
 \end{split}
 \end{equation}
 
-Már egy ilyen egyszerű kérdés megválaszolásához is három táblát kell összekapcsolni. Ez hatalmas erőforrást igényel, nem is beszélve arról, hogy mi a helyzet akkor, ha a barátok barátait szeretnénk lekérdezni, esetleg azok barátait, stb... Ilyen esetben sokkal célravezetőbb az, ha egy gráfadatbázisban tároljuk az elemeket. A baráti kapcsolat általában kétirányú dolog, így a példánkban irányítatlan gráfon ábrázoljuk a kapcsolatot, de irányított gráffal is lehetne, ez esetben minden él helyére két él kellene.
+Már egy ilyen egyszerű kérdés megválaszolásához is három táblát kell összekapcsolni. Ez hatalmas erőforrást igényel, nem is beszélve arról, hogy mi a helyzet akkor, ha tranzitív lezártat szeretnénk számolni a baráti kapcsolat mentén. Ilyen esetben sokkal célravezetőbb az, ha egy gráfadatbázisban tároljuk az elemeket. A baráti kapcsolat általában kétirányú dolog, így a példánkban irányítatlan gráfon ábrázoljuk a kapcsolatot, de irányított gráffal is lehetne, ez esetben minden él helyére két él kellene.
 
 \begin{figure}[H]
 	\centering

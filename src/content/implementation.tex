@@ -2,15 +2,17 @@
 \chapter{Implementáció}
 %----------------------------------------------------------------------------
 
-Az elkészült program \emph{Visual Studioban} egy \emph{solutionből}, azon belül két projektből áll. Az egyik projekt a \emph{TSL} fájlt tartalmazza, ez felel az adatbázis felépítéséért, a másik pedig a \Csh{} forrásfájlokat, ez az adatbázis szempontjából a kliensoldalt valósítja meg. A fejlesztést nagyban megkönnyítette, hogy ilyen esetben egyetlen kattintással tudjuk fordítani a két projektet. A továbbiakban először a \emph{TSL} projekt, majd a \emph{Trainbenchmark} nevű \Csh{} fájlokat tartalmazó projekt kerül bemutatásra.
+Ez a fejezet az elkészült program implementációját mutatja be. Először a \emph{TSL} projekt, majd a \emph{Trainbenchmark} nevű \Csh{} fájlokat tartalmazó projekt, végül pedig a többi eszköz futtatásához szükséges előkövetelmények kerülnek bemutatásra.
 
-\section{\emph{TrainBenchmarkTSLProject}}
+\section{TrainBenchmarkTSLProject}
+
+Az elkészült program \emph{Visual Studioban} egy \emph{solutionből}, azon belül két projektből áll. Az egyik projekt a \emph{TSL} fájlt tartalmazza, ez felel az adatbázis felépítéséért, a másik pedig a \Csh{} forrásfájlokat, ez az adatbázis szempontjából a kliensoldalt valósítja meg. A fejlesztést nagyban megkönnyítette, hogy ilyen esetben egyetlen kattintással tudjuk fordítani a két projektet.
 
 A projekt egyetlen \emph{.tsl} kiterjesztésű fájlból áll. Ez tartalmazza a Train Benchmark modelljének a Graph Engine-ben megfelelő leírását néhány módosítással. A modellben két osztály közötti kapcsolat a gráfban lévő éleket határozzák meg. Az osztályok a gráf csúcsai lesznek. A \emph{TSL} nem támogatja az öröklést, így azokhoz az osztályokhoz, amik öröklődnek fel van véve a szülő összes tulajdonsága. Ez a \emph{Segment} és a \emph{Switch} esetében lényeges, amik a \emph{TrackElement} osztályból öröklődnek, ezért mindkettő tartalmaz \emph{connectsTo} listát.
 
 A Graph Engine-ben a kapcsolatok nem típusfüggőek, minden gráfél \emph{CellId} típussal mutat egy cellára. Ez nagy könnyedség, hiszen amennyiben nem így lenne, azaz meg kéne határozni, hogy egy él milyen osztályú cellára mutat, akkor a \emph{TrackElement} \emph{connectsTo} éleit nem lehetne megvalósítani, ugyanis egy \emph{Segment} élen keresztül csatlakozhat \emph{Switch}-hez és egy másik \emph{Segment}-hez is.
 
-A módosított modell a \ref{fig:GraphEngineTSLModel} ábrán látható. A különbségek, amik ez a modell és a Train Benchmark eredeti modellje között van, az csak az öröklés miatti \emph{connectsTo} élekben van, így a két modell matematikai szempontból ekvivalens.
+A módosított modell a \ref{fig:GraphEngineTSLModel} ábrán látható. A különbségek, melyek e modell és a Train Benchmark eredeti modellje között van, az csak az öröklés miatti \emph{connectsTo} élekben van, így a két modell matematikai szempontból ekvivalens.
 
 Az éleknek két fajtája van. Sima \emph{CellId} típusú élek egy-egy kapcsolatot jelölnek, míg a \texttt{List<CellId>} egy-több kapcsolat leírására szolgál. Ez azt jelenti, hogy egy csúcsból egy éltípussal egy másik típusú csúcsba egy él vezet vagy vezethet több másik típusú csúcsba is egy-egy él.
 
@@ -43,12 +45,12 @@ A beolvasás a modell \emph{.ttl} fájlból való feldolgozását, majd az adatb
 
 Több olyan könyvtár létezik a .Net-hez, ami \emph{Turtle} típusú fájlokat tud feldolgozni. Ezek közül a \emph{dotNetRDF} nevű ingyenes és nyílt forráskódú könyvtárat használja a program. Ennek kezelése egyszerű, jól átlátható. A \emph{Turtle} állományban található \emph{Triple}-öket beolvassa a memóriába és készít egy gráfot, amit már gyorsan be lehet járni. Az elkészült gráf bejárása a következőképpen zajlik:
 
-\begin{itemize}
+\begin{enumerate}
 	\item Kiválasztjuk egy listába azokat a \emph{Triple}-öket, melyek a csúcsok típusát írják le.
 	\item Végigiterálunk a listán és minden csúcshoz létrehozunk egy megfelelő típusú osztályt.
 	\item Megkeressük azokat a további \emph{Triple}-öket, melyek az adott csúcshoz tartoznak és a hozzá kapcsolódó tulajdonságokat, éleket tárolják, majd ezeket az információkat beleírjuk az osztályunkba.
 	\item Az elkészült osztályt elmentjük a Graph Engine adatbázisába.
-\end{itemize}
+\end{enumerate}
 
 A feldolgozás folyamán két konverzióra van szükség, mégpedig azért, mert a \emph{Turtle} fájlban egyszerű szövegként van tárolva a \emph{Signal} és a \emph{Position}. Ezeket \emph{enum}-má kell konvertálni, hogy a Graph Engine csúcsaiba tulajdonságként el tudjuk menteni.
 
@@ -75,38 +77,6 @@ Több típusú csúcson kell műveleteket végezni, ezáltal a \emph{LINQ}-es le
 
 A modellen történő módosításokat a \emph{Modifier} osztály végzi. Négy különböző eset van, az alapján, hogy a \emph{SwitchSet} vagy a \emph{RouteSensor} kényszer kapcsán történik a módosítás, illetve \emph{Inject} vagy \emph{Repair} a célja. A modell elrontása egyszerűbb művelet a javításnál, ugyanis nem kell hibát keresni és azt kijavítani, elég csak megkeresni egy elemet és a megfelelő értékét hibásra állítani. Ezt követi az újraellenőrzés, ami a validációs szakasz ismételt futtatását jelenti. A módosítás és az újraellenőrzés ilyen sorrendben egymás után többször végrehajtódik.
 
-\subsection{Mérés és az eredmények elmentése}
+\section{A többi eszköz futtatása}
 
-Minden szakasz futási ideje a \emph{System.Diagnostic.StopWatch} osztály segítségével lett lemérve. A Train Benchmark többi \emph{Tool}-ja $ns$-ban ad eredményt a futás idejéről, azonban két azonos konfigurációjú , egymás után történő futtatás eredménye is legalább 100 $\mu{}s$-mal eltér. Ezen megfontolás miatt az elkészült program futásidő-mérésének pontossága 1 $\mu{}$s. A \emph{StopWatch} osztályban az \texttt{ElapsedTicks} és a \texttt{Frequency} \emph{property}-k segítségével lehet $ms$-nál pontosabb eredményt elérni.
-
-A méréseket ötször egymás után hajtja végre a program és az eredményt egy \emph{csv} fájlba fűzi bele. Az öt egymás utáni futtatás nagyobb valószínűséggel ad konzisztens eredményt. A \emph{csv} minden sorába egy adott futtatás szakaszának (beolvasás, ellenőrzés, módosítás vagy újraellenőrzés) az eredménye kerül. A felépítése az alábbi oszlopokból áll:
-
-\begin{itemize}
-	\item \emph{Tool}: Annak az adatbázis-rendszernek a neve, amin a programot futtatjuk.
-	\item \emph{Workload}: \emph{Inject} vagy \emph{Repair} lehet, az alapján hogy mit tesztelünk, a hibainjektálást vagy a javítást.
-	\item \emph{Description}: Leírást illeszthetünk ide. Ez az elkészült szoftver futtatása után üres lesz.
-	\item \emph{Model}: A modell neve és mérete kerül ide.
-	\item \emph{Run}: Aktuális futtatás sorszáma 1-től indexelve.
-	\item \emph{Phase}: A futtatott szakasz típusa kerül ide, értéke \emph{Read}, \emph{Check}, \emph{Transformation} vagy \emph{Recheck} lehet.
-	\item \emph{Iteration}: A módosítás és újraellenőrzés szakasz többszörös futtatásának sorszáma. A beolvasás- és a validációs szakaszban nincsen értéke.
-	\item \emph{Time}: Az adott szakasz futtatása alatt eltelt idő $ns$-ban. Nem a teszt kezdete óta eltelt időt jelzi.
-\end{itemize}
-
-A gép konfigurációja, melyen a méréseket végeztük a \ref{tab:System} táblázatban található. A meghajtón több, mint 20 GB szabad hely volt elérhető.
-
-\begin{table}[H]
-	\centering
-	\begin{TAB}(r,20pt,20pt){|c|c|}{|c|c|c|c|c|} 
-		Alaplap & Gigabyte Z87M-D3H \\
-		Processzor & Intel\textregistered{} Core\texttrademark{} i5-4690K CPU @ 3.50GHz \\ 
-		Memória & Kingston 8GB 1600MHz DDR3 Non-ECC CL11 \\
-		Meghajtó & Kingston HyperX 3K 240 GB SSD  \\
-		Operációs rendszer & Windows 7 Ultimate x64 Service Pack 1  \\ 
-	\end{TAB}
-	\caption{A gép konfigurációja}
-	\label{tab:System}
-\end{table}
-
-\section{Többi \emph{Tool} futtatása}
-
-A Train Benchmark már elkészült részei \emph{Linux} rendszeren lettek implementálva, de olyan környezetben készült, hogy ne legyen platformfüggő. Ennek ellenére semmilyen \emph{Windows} rendszeren ezidáig nem volt futtatva. \emph{Windows}-on parancssorból, \emph{Linux}-alapú környezetben terminálból lehet futtatni. Hátrányt jelent, hogy a \emph{Windows 7} parancssori ablakából nem lehet 8191 karakternél hosszabb parancsot futtatni, azonban a teljes Train Benchmark implementáció ennél többet követel meg. Ennek oka, hogy a \emph{Gradle}, melyben a Train Benchmark projektje készült, egymás után fűzi a futtatandó \emph{Java} \emph{class}-ok útvonalát egy hosszú parancsba. Lehetőség van azonban személyre szabottan futtatni. Ez szükségszerű, ugyanis az eredmények összehasonlításához ugyanolyan specifikációk kellenek. Ez azt jelenti, hogy csak a megfelelő kényszereket ellenőrizzük, csak a számunkra fontos adatbázis-kezelő szoftvereken fusson le és ugyanazon a modellen teszteljük, tehát nem kell új modellt generálni. Amennyiben korlátozzuk a futtatást ezekre a paraméterekre, akkor már egy rövidebb, futtatható kód generálódik.
+A Train Benchmark már elkészült részei \emph{Linux} rendszeren lettek implementálva, de olyan környezetben készült, hogy ne legyen platformfüggő. Ennek ellenére semmilyen \emph{Windows} rendszeren ezidáig nem volt futtatva. \emph{Windows}-on parancssorból, \emph{Linux}-alapú környezetben terminálból lehet futtatni. Hátrányt jelent, hogy a \emph{Windows 7} parancssori ablakából nem lehet 8191 karakternél hosszabb parancsot futtatni, azonban a teljes Train Benchmark implementáció ennél többet követel meg. Ennek oka, hogy a \emph{Gradle}, melyben a Train Benchmark projektje készült, egymás után fűzi a futtatandó \emph{Java} \emph{class}-ok útvonalát egy hosszú parancsba. Lehetőség van azonban személyre szabottan futtatni. Ez szükségszerű, ugyanis az eredményeket akkor van lehetőségünk érdemben összehasonlítani, ha azok ugyanabban a futtatókörnyezetben lettek rögzítve. Ez azt jelenti, hogy csak a megfelelő kényszereket ellenőrizzük, csak a számunkra fontos adatbázis-kezelő szoftvereken fusson le és ugyanazon a modellen teszteljük, tehát nem kell új modellt generálni. Amennyiben korlátozzuk a futtatást ezekre a paraméterekre, akkor már egy rövidebb, futtatható kód generálódik.
