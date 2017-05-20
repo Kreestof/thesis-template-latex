@@ -52,6 +52,14 @@ A továbbiakban egyesével a diagramokon látható eredményeket elemezzük. Az 
 
 A \emph{Read} szakaszban a Graph Engine minden modell esetében az adatok beolvasása és feldolgozása több ideig tartott. Ennek oka az, hogy az \emph{RDF} formátum feldolgozását és memóriába másolását a használt könyvtár (\emph{dotNetRDF}) időigényesen végezte.
 
+\subsubsection{Check}
+
+A validációs szakasz során a kapott eredmények alapján a Graph Engine futási idejét lényegesen nem befolyásolta a modell mérete. Ennek valószínűsíthető oka, hogy az adatbázis felé indított kérés feldolgozási ideje lassú, de a kérést már gyorsan dolgozza fel, az adatok mennyiségétől függetlenül.
+
+\subsubsection{Read and Check}
+
+A \emph{Read and Check} diagram az előző kettő összegét mutatja. A beolvasási szakasz több nagyságrenddel nagyobb a validációsnál, így az a meghatározó. A Graph Engine hiába gyorsabb nagy modelleknél a validációs szakaszban, ez az előny az összesített időknél eltűnik. 
+
 \pagebreak
 \begin{figure}[H]
 	\centering
@@ -60,14 +68,6 @@ A \emph{Read} szakaszban a Graph Engine minden modell esetében az adatok beolva
 	\caption{A hibainjektálás tesztelésének futási idejeinek eredménye a \emph{RouteSensor} esetében.}
 	\label{fig:RouteSensorInjectResult}
 \end{figure}
-
-\subsubsection{Check}
-
-A validációs szakasz során a kapott eredmények alapján a Graph Engine futási idejét lényegesen nem befolyásolta a modell mérete. Ennek valószínűsíthető oka, hogy az adatbázis felé indított kérés feldolgozási ideje lassú, de a kérést már gyorsan dolgozza fel, az adatok mennyiségétől függetlenül.
-
-\subsubsection{Read and Check}
-
-A \emph{Read and Check} diagram az előző kettő összegét mutatja. A beolvasási szakasz több nagyságrenddel nagyobb a validációsnál, így az a meghatározó. A Graph Engine hiába gyorsabb nagy modelleknél a validációs szakaszban, ez az előny az összesített időknél eltűnik. 
 
 \subsubsection{Transformation}
 
@@ -94,41 +94,41 @@ A \ref{fig:RouteSensorRepairResultTransformation} ábrán a \emph{Transformation
 	\label{fig:RouteSensorRepairResultTransformation}
 \end{figure}
 
-\section{A \emph{SwitchSet}-hez tartozó \emph{Inject} eredményeinek értékelése}
-
-A továbbiakban a \emph{SwitchSet} kényszer teljesülésének a feltételét vizsgáltuk. A modellbe a hibainjektálás és a javítás is a \emph{SwitchSet} kényszernek megfelelően történt. Az eredmények diagramja a \ref{fig:SwitchSetInjectResult} ábrán látható.
-
-A \emph{Read} fázisban a várakozásunknak megfelelően nem változott a teljesítmény. Azonban a \emph{RouteSensor}-hoz képest itt a Graph Engine csak eggyel kisebb modell esetében futott le elfogadható időn belül, az \emph{RDF4J} pedig eggyel nagyobbnál is.
-
-\pagebreak
-\begin{figure}[H]
-	\centering
-	\vspace*{-2cm}
-	\makebox[\linewidth]{\includegraphics[width=1\linewidth]{figures/SwitchSet-times-Inject.pdf}}
-	\caption{A hibainjektálás tesztelésének futási idejeinek eredménye a \emph{SwitchSet} esetében.}
-	\label{fig:SwitchSetInjectResult}
-\end{figure}
-
-\subsubsection{Check és Recheck}
-
-A validációs fázisokban szemmel láthatóan elmarad a Graph Engine teljesítménye a többi eszközéhez képest. A futási idő bizonyos modelleknél több, mint 1000-szerese a másik két eszközének. Emellett a \emph{Jena} és az \emph{RDF4J} teljesítménye nőtt a \emph{RouteSensor} kényszer validációs teljesítményméréséhez képest, azonban a Graph Engine-é jelentős mértékben csökkent.
-
-Ennek az oka, hogy a \emph{SwitchSet} kényszerhez két \emph{LINQ} lekérdezés, ezáltal három \emph{foreach} ciklus van egymásba ágyazva, míg a \emph{RouteSensor}-nál csak egy \emph{LINQ} lekérdezés van. Az, hogy minden lekérdezés után az összes adatot el kell menteni a kliensoldali memóriába, emellett az adatbázishoz is rengeteg lekérdezést kell intézni a validációhoz, ezt az eredményt produkálta. Sokat javítana a teljesítményen, ha az adatbázishoz csak egy kérést kellene küldeni, azonban ez egyelőre nem megoldható, ugyanis több típusú gráfcsúcsot kell lekérdezni a kényszer validációjához.
-
-\subsubsection{Read and Check}
-
-A \emph{RouteSensor} kényszerhez tartozó \emph{Inject} méréssel ellentétben a \emph{Read and Check} szakaszban a validáció ideje a számottevőbb.
-
-\subsubsection{Transformation}
-
-A módosítás fázisban az \emph{RDF4J} és a \emph{Jena} teljesítménye kis kilengésekkel, konstans értéken marad a futási idő szempontjából. A Graph Engine esetében, hasonlóan a \emph{RouteSensor} módosításhoz képest, nagyobb modellekre rövidebb időértékeket mértünk, mint kisebbekre.
-
-\section{A \emph{SwitchSet}-hez tartozó \emph{Repair} eredményeinek értékelése}
-
-A \emph{SwitchSet} kényszer validációs teljesítménymérésének eredménye a beolvasás és validációs fázisokban megegyezik a hibainjektálásnál kapott eredményekkel. A módosítás fázisban a validációs szakasszal megegyező eredményt kaptunk. A módosításhoz először megkeresi azt, hogy hol található hiba, aztán kijavítja. Azonban azt megkeresni
+%\section{A \emph{SwitchSet}-hez tartozó \emph{Inject} eredményeinek értékelése}
+%
+%A továbbiakban a \emph{SwitchSet} kényszer teljesülésének a feltételét vizsgáltuk. A modellbe a hibainjektálás és a javítás is a \emph{SwitchSet} kényszernek megfelelően történt. Az eredmények diagramja a \ref{fig:SwitchSetInjectResult} ábrán látható.
+%
+%A \emph{Read} fázisban a várakozásunknak megfelelően nem változott a teljesítmény. Azonban a \emph{RouteSensor}-hoz képest itt a Graph Engine csak eggyel kisebb modell esetében futott le elfogadható időn belül, az \emph{RDF4J} pedig eggyel nagyobbnál is.
+%
+%\pagebreak
+%\begin{figure}[H]
+%	\centering
+%	\vspace*{-2cm}
+%	\makebox[\linewidth]{\includegraphics[width=1\linewidth]{figures/SwitchSet-times-Inject.pdf}}
+%	\caption{A hibainjektálás tesztelésének futási idejeinek eredménye a \emph{SwitchSet} esetében.}
+%	\label{fig:SwitchSetInjectResult}
+%\end{figure}
+%
+%\subsubsection{Check és Recheck}
+%
+%A validációs fázisokban szemmel láthatóan elmarad a Graph Engine teljesítménye a többi eszközéhez képest. A futási idő bizonyos modelleknél több, mint 1000-szerese a másik két eszközének. Emellett a \emph{Jena} és az \emph{RDF4J} teljesítménye nőtt a \emph{RouteSensor} kényszer validációs teljesítményméréséhez képest, azonban a Graph Engine-é jelentős mértékben csökkent.
+%
+%Ennek az oka, hogy a \emph{SwitchSet} kényszerhez két \emph{LINQ} lekérdezés, ezáltal három \emph{foreach} ciklus van egymásba ágyazva, míg a \emph{RouteSensor}-nál csak egy \emph{LINQ} lekérdezés van. Az, hogy minden lekérdezés után az összes adatot el kell menteni a kliensoldali memóriába, emellett az adatbázishoz is rengeteg lekérdezést kell intézni a validációhoz, ezt az eredményt produkálta. Sokat javítana a teljesítményen, ha az adatbázishoz csak egy kérést kellene küldeni, azonban ez egyelőre nem megoldható, ugyanis több típusú gráfcsúcsot kell lekérdezni a kényszer validációjához.
+%
+%\subsubsection{Read and Check}
+%
+%A \emph{RouteSensor} kényszerhez tartozó \emph{Inject} méréssel ellentétben a \emph{Read and Check} szakaszban a validáció ideje a számottevőbb.
+%
+%\subsubsection{Transformation}
+%
+%A módosítás fázisban az \emph{RDF4J} és a \emph{Jena} teljesítménye kis kilengésekkel, konstans értéken marad a futási idő szempontjából. A Graph Engine esetében, hasonlóan a \emph{RouteSensor} módosításhoz képest, nagyobb modellekre rövidebb időértékeket mértünk, mint kisebbekre.
+%
+%\section{A \emph{SwitchSet}-hez tartozó \emph{Repair} eredményeinek értékelése}
+%
+%A \emph{SwitchSet} kényszer validációs teljesítménymérésének eredménye a beolvasás és validációs fázisokban megegyezik a hibainjektálásnál kapott eredményekkel. A módosítás fázisban a validációs szakasszal megegyező eredményt kaptunk. A módosításhoz először megkeresi azt, hogy hol található hiba, aztán kijavítja. Azonban azt megkeresni
 
 \section{\emph{Performance Profiler}}
 
-A \emph{Visual Studio} beépített \emph{Performance Profiler} funkciójával elemezni lehet egy \emph{.NET} platformon futó programot. Ezt arra használtuk, hogy megállapítsuk melyik az a függvényhívás, ahol a program a legtöbb időt tölti. Emellett lehetőség van azt is vizsgálni, hogy egy függvény hányszor hívódott meg. A \emph{Profiler} eredménye azt mutatta, hogy a \texttt{System.Collections.IEnumerator.MoveNext()} függvény végrehajtásával tölti a legtöbb időt a processzor. Ez egy \emph{LINQ} lekérdezés után az eredményeken való végigiterálásnál hívódik. Második helyen az \emph{TurtleParser} \texttt{Load()} metódusa áll, ami a \emph{dotNetRDF} könyvtár beolvasásért felelős metódusa.
+A \emph{Visual Studio} beépített \emph{Performance Profiler} funkciójával elemezni lehet egy \emph{.NET} platformon futó programot. Ezt arra használtuk, hogy megállapítsuk melyik az a függvényhívás, ahol a program a legtöbb időt tölti. Emellett lehetőség van azt is vizsgálni, hogy egy függvény hányszor hívódott meg. A \emph{Profiler} eredménye azt mutatta, hogy a \texttt{System.Collections.IEnumerator.MoveNext()} függvény végrehajtásával tölti a legtöbb időt a processzor. Ez egy \emph{LINQ} lekérdezés után az eredményeken való végigiterálásnál hívódik. Második helyen az \emph{TurtleParser} \texttt{Load()} metódusa áll, ami a \emph{dotNetRDF} könyvtár beolvasásért felelős függvénye.
 
 %\includepdf[pagecommand={}]{figures/times-Repair.pdf}

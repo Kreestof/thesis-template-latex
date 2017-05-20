@@ -63,7 +63,7 @@ A modellvalidációs osztály a \emph{Validator} nevet viseli. Két függvényb�
 \subsubsection{\emph{SwitchSet}}
 
 A \emph{SwitchSet} kényszer ellenőrzéséhez az összes modellben szereplő \emph{Route}-on, melynek kezdetén a \emph{Semaphore} \emph{Signal}-ja \emph{Go} értékű, lévő \emph{SwitchPosition} és a hozzátartozó \emph{Switch} \emph{Position} tulajdonsága meg kell egyezzen. Ezért a függvényben először a \emph{Semaphore}-okon iterálunk végig, majd azokon az utakon, melyeknek kezdőpontja az adott \emph{Semaphore}, végül pedig a hozzá tartozó \emph{SwitchPosition} és az ahhoz tartozó \emph{Switch} tulajdonságait kérjük le. A folyamat forráskódja a \ref{fig:SwitchSetSource} ábrán látható.
-%TODO ábra
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth, keepaspectratio]{figures/Validator.pdf}
