@@ -35,7 +35,7 @@ Két kényszert valósítottunk meg, ezért ezt a kettőt mutatjuk be részletes
 
 \subsection{RouteSensor}
 
-Az utak és a rajtuk található váltók között nincs közvetlen kapcsolat. Az utakhoz csak a \emph{SwitchPosition} kapcsolódik, egy \emph{SwitchPosition} pedig pontosan egy váltóhoz tartozik. Ezáltal, ha közvetve is, de egy úthoz a rajta található váltókat hozzá lehet rendelni. A \emph{RouteSensor} azt követeli meg, hogy az úton található váltókhoz ne tartozhasson érzékelő úgy, hogy az út és az érzékelő között ne legyen kapcsolat. A modellben ez a \ref{fig:RouteSensor} ábrán látható módon jelenik meg. Amennyiben a kérdőjellel ellátott él hiányzik, akkor a kényszer nem teljesül.
+Az utak és a rajtuk található váltók között nincs közvetlen kapcsolat. Az utakhoz csak a \emph{SwitchPosition} kapcsolódik, egy \emph{SwitchPosition} pedig pontosan egy váltóhoz tartozik. Ezáltal, ha közvetve is, de egy úthoz a rajta található váltókat hozzá lehet rendelni. A \emph{RouteSensor} azt követeli meg, hogy az úton található váltókhoz ne tartozhasson szenzor úgy, hogy az út és a szenzor között ne legyen kapcsolat. A modellben ez a \ref{fig:RouteSensor} ábrán látható módon jelenik meg. Amennyiben a kérdőjellel ellátott él hiányzik, akkor a kényszer nem teljesül.
 
 \begin{figure}[!ht]
 	\centering
@@ -75,14 +75,25 @@ Ebben a fázisban a hibák kijavításának szimulálása zajlik. Itt is a javí
 
 \section{Resource Description Framework}
 
-A \emph{Resource Description Framework} (\emph{RDF}) egy leíró keretrendszer, amelyet adatok reprezentálására alkalmas. Elsődleges célja számítógépek közötti információcsere, nem az emberi feldolgozás. Ez egy általános célú keretrendszer, ezáltal különböző alkalmazások között is alkalmas információcserére. Többféle szintaxisa létezik, ebből a \emph{Turtle}-t emeljük ki, mert a Train Benchmark \emph{RDF} alapú eszközei ezt használják. A \emph{Turtle} adathármasokat (\emph{triple}) tárol, ami a következőkből épül fel:
+A \emph{Resource Description Framework} (\emph{RDF}) egy leíró keretrendszer, amelyet adatok reprezentálására alkalmas. Elsődleges célja számítógépek közötti információcsere, nem az emberi feldolgozás. Ez egy általános célú keretrendszer, ezáltal különböző alkalmazások között is alkalmas információcserére. Az \emph{RDF} adathármasokat (\emph{triple}) tárol, ami a következőkből épül fel:
 \begin{itemize}
 	\item \emph{subject}: Az adathármas alanya, rá vonatkozik a \emph{triple}-ben tárolt adat.
 	\item \emph{predicate}: Tulajdonság, a \emph{subject} és az \emph{object} közötti kapcsolat típusát írja le.
 	\item \emph{object}: A tulajdonság tárgya, leírhat egyszerű tulajdonságot is, de amennyiben a predicate két, a modellben szereplő elem kapcsolatának típusát jelöli, akkor egy másik modellbeli elemet fog jelenteni.
 \end{itemize}
 
-\emph{Subject}, \emph{predicate}, \emph{object} hármas lehet a következő: \emph{Magyarország}, \emph{tengerpart}, \emph{nincs}; míg lehet az is, hogy \emph{Magyarország}, \emph{szomszéd}, \emph{Ausztria}. Míg az első esetben a predicate egy tulajdonságot jelölt, a második esetben egy kapcsolatot egy másik hasonló elemmel.
+Ez alapján felfoghatjuk az \emph{RDF}-et úgy, mint egy irányított gráfot, melyeknek a csúcsain és élein információt tárolunk. A csúcsok a \emph{subject}-ek és \emph{object}-ek a csúcsok, a \emph{predicate}-ek pedig a köztük lévő élek. Többféle szintaxisa létezik, ebből a \emph{Turtle}-t emeljük ki, mert a Train Benchmark \emph{RDF} alapú eszközei ezt használják. A \emph{Turtle} a \emph{subject}-et, \emph{predicate}-et és \emph{object}-et szóközzel választja el egymástól és egy hármasnak a leírása ponttal végződik. Emellett lehetőség van egy \emph{subject}-ről több \emph{predicate}-et és \emph{object}-et tárolni úgy, hogy az első sor végére (melyben a \emph{subject} szerepel) pontosvesszőt teszünk, majd a további sorokban nem írjuk le fölöslegesen a \emph{subject}-et. Az ilyen felsorolás legvégére pontot kell tennünk.
+%TODO: ábra
+\begin{figure}[H]
+	\centering
+	\includegraphics{figures/Turtle.pdf}
+	\caption{Az egyik modell \emph{Turtle} leírásának részlete.}
+	\label{fig:Turtle}
+\end{figure}
+
+A Train Benchmark modelljének leírása \emph{Turtle}-ben a \ref{fig:Turtle} ábrán látható. A \emph{subject} mindig egy szám, ami egy elem egyedi azonosítója, a \emph{RailwayElement} ősosztály egyetlen tulajdonsága. A \emph{predicate} meghatározza azt, hogy a \emph{triple} az elem típusát, tulajdonságát vagy két elem közötti kapcsolatot ír le. Amennyiben \texttt{a} az értéke, akkor a \emph{subject} egy típust fog leírni (például \emph{Route} vagy \emph{Semaphore}). Egy elem leírása mindig azzal kezdődik, hogy meghatározza a típusát. Ezután felsorolás-szerűen megadja a tulajdonságait (active vagy signal), mégpedig úgy, hogy a \emph{predicate} a tulajdonság nevét, az \emph{object} pedig az értékét. Ezután leírja az egyes elemek közötti kapcsolatot. Ebben az esetben a \emph{predicate} a kapcsolat neve, míg a \emph{subject} a cél objektum azonosítója. 
+
+
 
 \section{Létező Train Benchmark implementációk}
 

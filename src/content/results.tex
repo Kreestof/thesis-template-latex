@@ -2,7 +2,7 @@
 \chapter{Mérési eredmények}
 %----------------------------------------------------------------------------
 
-Ebben a fejezetben a tesztek eredményének elemzéséről és a leszűrhető konklúziókról lesz szó. Összehasonlítjuk a Graph Engine teljesítményét a másik két eszköz teljesítményével. Kielemezzük a lehetséges okait a futási idők közötti különbségeknek.
+Ebben a fejezetben a teljesítménymérések eredményének elemzéséről és a leszűrhető konklúziókról lesz szó. Összehasonlítjuk a Graph Engine teljesítményét a másik két eszköz teljesítményével. Kielemezzük a lehetséges okait a futási idők közötti különbségeknek.
 
 \section{Mérés és az eredmények elmentése}
 
@@ -12,13 +12,13 @@ A méréseket ötször egymás után hajtja végre a program és az eredményt e
 
 \begin{itemize}
 	\item \emph{Tool}: Annak az adatbázis-rendszernek a neve, amin a programot futtatjuk.
-	\item \emph{Workload}: \emph{Inject} vagy \emph{Repair} lehet, az alapján hogy mit tesztelünk, a hibainjektálást vagy a javítást.
+	\item \emph{Workload}: \emph{Inject} vagy \emph{Repair} lehet, az alapján hogy milyen teljesítményt mérünk, a hibainjektálást vagy a javítást.
 	\item \emph{Description}: Leírást illeszthetünk ide. Ez az elkészült szoftver futtatása után üres lesz.
 	\item \emph{Model}: A modell neve és mérete kerül ide.
 	\item \emph{Run}: Aktuális futtatás sorszáma 1-től indexelve.
 	\item \emph{Phase}: A futtatott szakasz típusa kerül ide, értéke \emph{Read}, \emph{Check}, \emph{Transformation} vagy \emph{Recheck} lehet.
 	\item \emph{Iteration}: A módosítás és újraellenőrzés szakasz többszörös futtatásának sorszáma. A beolvasás- és a validációs szakaszban nincsen értéke.
-	\item \emph{Time}: Az adott szakasz futtatása alatt eltelt idő $ns$-ban. Nem a teszt kezdete óta eltelt időt jelzi.
+	\item \emph{Time}: Az adott szakasz futtatása alatt eltelt idő $ns$-ban. Nem a teljesítménymérés kezdete óta eltelt időt jelzi.
 \end{itemize}
 
 A gép konfigurációja, melyen a méréseket végeztük a \ref{tab:System} táblázatban található. A meghajtón több, mint 20 GB szabad hely volt elérhető.
@@ -36,13 +36,13 @@ A gép konfigurációja, melyen a méréseket végeztük a \ref{tab:System} táb
 	\label{tab:System}
 \end{table}
 
-Az elkészült program és a Train Benchmark többi tesztjének futtatása sok órás művelet. A modellek (amiken a teszteket végeztük) elemeinek a száma körülbelül 5 ezertől 9,3 millióig terjed kettes alapú logaritmikus skálán. Olyan esetben, amikor egy eszköz egy szakaszban lévő futási ideje túllépne egy bizonyos észszerű határt, akkor leállítjuk a tesztelést.  Ennek az az oka, hogy nem célravezető napokat, heteket várni az eredményre, mivel a kisebb modelleken végzett tesztekből is ugyanolyan következtetéseket lehet levonni. Ezt a határt 100000 $ms$-nál húztuk meg. Amennyiben bármelyik szakaszban (beolvasás, ellenőrzés vagy módosítás) a futási idő meghaladja ezt a határt, akkor értelemszerűen a többi szakaszban sem kapunk eredményt.
+Az elkészült program és a Train Benchmark többi teljesítménymérésének futtatása sok órás művelet. A modellek (amiken a teszteket végeztük) elemeinek a száma körülbelül 5 ezertől 9,3 millióig terjed kettes alapú logaritmikus skálán. Olyan esetben, amikor egy eszköz egy szakaszban lévő futási ideje túllépne egy bizonyos észszerű határt, akkor leállítjuk a teljesítménymérést. Ezt a határt a \emph{RouteSensor} esetében 100000 $ms$-nál, a \emph{SwitchSet} kényszer esetében 200000 $ms$-nál húztuk meg. Amennyiben bármelyik szakaszban (beolvasás, ellenőrzés vagy módosítás) a futási idő meghaladja ezt a határt, akkor értelemszerűen a többi szakaszban sem kapunk eredményt.
 
-A tesztek eredményét két példán keresztül mutatjuk be. Mindkét példa a modell beolvasása után a \emph{RouteSensor} kényszer teljesülését ellenőrzi, majd az ahhoz kapcsolódó \emph{Inject}, illetve \emph{Repair} transzformációt hajtja végre. Mindkét esetben minden modellen ötször futtattuk le a teljes ciklust és azon belül a módosítás, újraellenőrzés fázisokat tizenháromszor, végül pedig az egész átlagából számoltuk ki az idő értékeket.
+A tesztek eredményét a következő részeken keresztül mutatjuk be. Az első két példa a modell beolvasása után a \emph{RouteSensor} kényszer teljesülését ellenőrzi, majd az ahhoz kapcsolódó \emph{Inject}, illetve \emph{Repair} transzformációt hajtja végre. A második két példa a \emph{SwitchSet} kényszert követeli meg. Minden esetben, a modelleken ötször futtattuk le a teljes ciklust és azon belül a módosítás, újraellenőrzés fázisokat tizenháromszor, végül pedig az egész átlagából számoltuk ki az idő értékeket.
 
 Minden eszköz tesztjét egy parancssori ablakból futtattuk, ezáltal törekedve arra, hogy más programok ne használják a számítógép erőforrásait. A tesztek után az eredmények kiértékelése céljából lefuttattuk úgy is, hogy közben a \emph{Visual Studio} beépített teljesítményanalízisével mértük, hogy melyik függvény végrehajtása tart a legtovább.
 
-\section{Az \emph{Inject} eredményeinek értékelése}
+\section{A \emph{RouteSensor}-hoz tartozó \emph{Inject} eredményeinek értékelése}
 
 A \ref{fig:RouteSensorInjectResult} ábra mutatja 6 diagramon a tesztelés eredményét. A diagramokon a függőleges tengely a futási idő $ms$-ban mért logaritmikus skáláját, míg a vízszintes tengely a modellek méretének skáláját mutatja. Ez utóbbi is logaritmikus skála, mert egy osztás alatt a modellek mérete duplájára növekszik. A diagramok tetején található felirat az adott futtatási fázist mutatják.
 
@@ -56,7 +56,7 @@ A \emph{Read} szakaszban a Graph Engine minden modell esetében az adatok beolva
 \begin{figure}[H]
 	\centering
 	\vspace*{-2cm}
-	\makebox[\linewidth]{\includegraphics[width=1.3\linewidth]{figures/times-Inject.pdf}}
+	\makebox[\linewidth]{\includegraphics[width=1\linewidth]{figures/RouteSensor-times-Inject.pdf}}
 	\caption{A hibainjektálás tesztelésének futási idejeinek eredménye a \emph{RouteSensor} esetében.}
 	\label{fig:RouteSensorInjectResult}
 \end{figure}
@@ -81,18 +81,51 @@ A \emph{Recheck} fázisban a \emph{Check} szakasszal megegyező eredményt kaptu
 
 Hasonlóan a \emph{Read and Check} diagramon látható eredményhez, itt is az egyik fázis sokkal több idő alatt fut le, ezáltal az együttes eredményben dominál. Itt azonban a validációs fázis a meghatározó. Kis modellek esetén ugyan befolyásolja a Graph Engine eredményét, de nagyobb méretű modelleken nem.
 
-\section{\emph{A Repaireredményeinek értékelése}}
+\section{A \emph{RouteSensor}-hoz tartozó \emph{Repair} eredményeinek értékelése}
 
 A \emph{Repair} tesztelés esetében a beolvasás és a validáció ugyanolyan eredményt adott, mint az \emph{Inject} esetében. Ez a várt eredmény, hiszen ugyanazok a függvények futottak le. Így csak a módosítás fázisban van eltérés.
 
-A \ref{fig:RepairResultTransformation} ábrán a \emph{Transformation} és a \emph{Transformation and Recheck} fázisok futásidejei találhatóak. A várakozásnak megfelelően a Graph Engine módosítás fázisban töltött ideje a tesztelt modellekre nem csökkent, de nem is nőtt számottevően. A másik két eszköz esetében exponenciálisan növekedett a végrehajtási idő. Az \emph{RDF4J} és a \emph{Jena} esetében nem csak az \emph{Inject}, de a \emph{Repair} módosításnál is a modell ellenőrzése minden mért eredménynél több, mint tízszer annyi, így a \emph{Transformation and Recheck} szakasz idejét a \emph{Transformation} csak kis mértékben befolyásolja. Ezzel szemben a Graph Engine esetében a módosítás és az újraellenőrzés fázisok időben nagyságrendileg megegyeznek, így a kettő egyforma mértékben befolyásolja az eredményt.
+A \ref{fig:RouteSensorRepairResultTransformation} ábrán a \emph{Transformation} és a \emph{Transformation and Recheck} fázisok futásidejei találhatóak. A várakozásnak megfelelően a Graph Engine módosítás fázisban töltött ideje a tesztelt modellekre nem csökkent, de nem is nőtt számottevően. A másik két eszköz esetében exponenciálisan növekedett a végrehajtási idő. Az \emph{RDF4J} és a \emph{Jena} esetében nem csak az \emph{Inject}, de a \emph{Repair} módosításnál is a modell ellenőrzése minden mért eredménynél több, mint tízszer annyi, így a \emph{Transformation and Recheck} szakasz idejét a \emph{Transformation} csak kis mértékben befolyásolja. Ezzel szemben a Graph Engine esetében a módosítás és az újraellenőrzés fázisok időben nagyságrendileg megegyeznek, így a kettő egyforma mértékben befolyásolja az eredményt.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics{figures/times-Repair-Transformation-Recheck.pdf}
+	\includegraphics{figures/RouteSensor-times-Repair-Transformation-Recheck.pdf}
 	\caption{A modelljavítás tesztelésének eredménye a \emph{RouteSensor} kényszer esetében.}
-	\label{fig:RepairResultTransformation}
+	\label{fig:RouteSensorRepairResultTransformation}
 \end{figure}
+
+\section{A \emph{SwitchSet}-hez tartozó \emph{Inject} eredményeinek értékelése}
+
+A továbbiakban a \emph{SwitchSet} kényszer teljesülésének a feltételét vizsgáltuk. A modellbe a hibainjektálás és a javítás is a \emph{SwitchSet} kényszernek megfelelően történt. Az eredmények diagramja a \ref{fig:SwitchSetInjectResult} ábrán látható.
+
+A \emph{Read} fázisban a várakozásunknak megfelelően nem változott a teljesítmény. Azonban a \emph{RouteSensor}-hoz képest itt a Graph Engine csak eggyel kisebb modell esetében futott le elfogadható időn belül, az \emph{RDF4J} pedig eggyel nagyobbnál is.
+
+\pagebreak
+\begin{figure}[H]
+	\centering
+	\vspace*{-2cm}
+	\makebox[\linewidth]{\includegraphics[width=1\linewidth]{figures/SwitchSet-times-Inject.pdf}}
+	\caption{A hibainjektálás tesztelésének futási idejeinek eredménye a \emph{SwitchSet} esetében.}
+	\label{fig:SwitchSetInjectResult}
+\end{figure}
+
+\subsubsection{Check és Recheck}
+
+A validációs fázisokban szemmel láthatóan elmarad a Graph Engine teljesítménye a többi eszközéhez képest. A futási idő bizonyos modelleknél több, mint 1000-szerese a másik két eszközének. Emellett a \emph{Jena} és az \emph{RDF4J} teljesítménye nőtt a \emph{RouteSensor} kényszer validációs teljesítményméréséhez képest, azonban a Graph Engine-é jelentős mértékben csökkent.
+
+Ennek az oka, hogy a \emph{SwitchSet} kényszerhez két \emph{LINQ} lekérdezés, ezáltal három \emph{foreach} ciklus van egymásba ágyazva, míg a \emph{RouteSensor}-nál csak egy \emph{LINQ} lekérdezés van. Az, hogy minden lekérdezés után az összes adatot el kell menteni a kliensoldali memóriába, emellett az adatbázishoz is rengeteg lekérdezést kell intézni a validációhoz, ezt az eredményt produkálta. Sokat javítana a teljesítményen, ha az adatbázishoz csak egy kérést kellene küldeni, azonban ez egyelőre nem megoldható, ugyanis több típusú gráfcsúcsot kell lekérdezni a kényszer validációjához.
+
+\subsubsection{Read and Check}
+
+A \emph{RouteSensor} kényszerhez tartozó \emph{Inject} méréssel ellentétben a \emph{Read and Check} szakaszban a validáció ideje a számottevőbb.
+
+\subsubsection{Transformation}
+
+A módosítás fázisban az \emph{RDF4J} és a \emph{Jena} teljesítménye kis kilengésekkel, konstans értéken marad a futási idő szempontjából. A Graph Engine esetében, hasonlóan a \emph{RouteSensor} módosításhoz képest, nagyobb modellekre rövidebb időértékeket mértünk, mint kisebbekre.
+
+\section{A \emph{SwitchSet}-hez tartozó \emph{Repair} eredményeinek értékelése}
+
+A \emph{SwitchSet} kényszer validációs teljesítménymérésének eredménye a beolvasás és validációs fázisokban megegyezik a hibainjektálásnál kapott eredményekkel. A módosítás fázisban a validációs szakasszal megegyező eredményt kaptunk. A módosításhoz először megkeresi azt, hogy hol található hiba, aztán kijavítja. Azonban azt megkeresni
 
 \section{\emph{Performance Profiler}}
 
