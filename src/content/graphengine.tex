@@ -2,7 +2,7 @@
 \chapter{Graph Engine}
 %----------------------------------------------------------------------------
 
-A Graph Engine a Microsoft cég egyik projektje, amit 2010. október 30-án indítottak el, akkor még \emph{Trinity} néven. Ez egy gráfadatbázis-rendszer ami memóriafelhőn fut. A memóriafelhő egy globálisan címezhető, memóriában található kulcs-érték tároló. Mivel memóriaalapú, ezért gyors véletlen elérést biztosít nagyméretű gráfok esetén is, támogatja a gyors gráfbejárást és a párhuzamos feldolgozást is.
+A Graph Engine a Microsoft cég egyik projektje, ami 2010. október 30. óta érhető el, akkor még \emph{Trinity} néven.\cite{MicrosoftTrinity} Ez egy gráfadatbázis-rendszer ami memóriafelhőn fut. A memóriafelhő egy globálisan címezhető, memóriában található kulcs-érték tároló. Mivel memóriaalapú, ezért gyors véletlen elérést biztosít nagyméretű gráfok esetén is, támogatja a gyors gráfbejárást és a párhuzamos feldolgozást is.\cite{Trinity}
 
 Az elkészített megoldás Microsoft Windows 7 x64 operációs rendszeren, Visual Studioban készült és \Csh{} nyelven, ezért a továbbiakban leírtak erre a környezetre vonatkoznak.
 
@@ -79,7 +79,7 @@ Sajnálatos módon a Graph Engine egyelőre nem támogatja az egymásba ágyazot
 
 \subsection{LINQ} \label{graphenginelinq}
 
-A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező szolgáltatás, ami megkönnyíti az adatelérést a programozó számára. Célja a nem, vagy csak részben objektum-orientált adatforrások általános célú feldolgozása. Kezdetben az \emph{SQL}- és az \emph{XML} nyelvet támogatta, mivel a relációs adatbázisok és az XML fájlok a két legelterjedtebb, nem objektum-orientált adatforrás.
+A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező szolgáltatás, ami megkönnyíti az adatelérést a programozó számára. Célja a nem, vagy csak részben objektum-orientált adatforrások általános célú feldolgozása.\cite{LINQ} Kezdetben az \emph{SQL}- és az \emph{XML} nyelvet támogatta, mivel a relációs adatbázisok és az XML fájlok a két legelterjedtebb, nem objektum-orientált adatforrás.
 
 \begin{figure}[H]
 	\centering
@@ -135,4 +135,4 @@ A \emph{Language-Integrated Knowledge Query} (\emph{LIKQ}) egy projekt, melynek 
 	\item \texttt{VisitNode(Expression ex)}
 \end{itemize}
 
-Az \emph{Expression ex} egy lambda kifejezést jelent. A dolgozat készítésekor ez a projekt még fejlesztés alatt állt, még nem készült hozzá dokumentáció, ellenben a projekt nyílt forráskódú, így lehetőség van a forráskód tanulmányozására. Ez nem vezetett eredményre, a legegyszerűbb lekérdezésekre sem adott eredményt, \emph{System.NullReferenceException} kivételt dobott minden esetben. Így az implementáció során a munka a \emph{LINQ} lekérdezések használatát követelte meg.
+Az \emph{Expression ex} egy lambda kifejezést jelent.\cite{Lambda} A dolgozat készítésekor ez a projekt még fejlesztés alatt állt, még nem készült hozzá dokumentáció, ellenben a projekt nyílt forráskódú, így lehetőség van a forráskód tanulmányozására. Ez nem vezetett eredményre, a legegyszerűbb lekérdezésekre sem adott eredményt, \emph{System.NullReferenceException} kivételt dobott minden esetben. Így az implementáció során a munka a \emph{LINQ} lekérdezések használatát követelte meg.
