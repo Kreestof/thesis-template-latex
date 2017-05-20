@@ -2,12 +2,4 @@
 \chapter{Összefoglalás}
 %----------------------------------------------------------------------------
 
-A következőkben az eredményeket alapul véve összegezzük a Graph Engine előnyeit és hátrányai az \emph{RDF4J}-hez és a \emph{Jena}-hoz viszonyítva. 
-
-A teljesítménymérés eredménye alapján a Graph Engine  kisméretű modellek esetében kevésbé bizonyult hatékonynak, mint a másik két eszköz. Azonban nagyobb méretű modellek esetében a \emph{RouteSensor} kényszer validációihoz tartozó lekérdezésnél teljesítményben utoléri a másik kettőt. Ez azt jelenti, hogy a modellvalidációt és a hibainjektálást vagy javítást hasonló idő alatt végzi el. A tendenciák alapján még nagyobb modellek esetében valószínűsíthető, hogy gyorsabb is lenne.  A beolvasás sebessége viszont lekorlátozza ezeknek a mérhetőségét, így ezt biztosan nem jelenthetjük ki.
-
-Nagy hátrányt jelentett, hogy a modellen végzett validációt és módosításokat mindkét kényszer esetében több lekérdezésben kellett megfogalmazni. Ez folyamatos kommunikációval jár az adatbázis és a kliensoldal között, ami erőforrás-igényes, redundáns és céltalan.
-
-\section{Továbbfejlesztési lehetőségek}
-
-A Graph Engine jelenlegi verziójában nem tűnik hatékonyabbnak a másik két tesztelt eszköznél. Ennek ellenére sok potenciállal rendelkezik a jövőre nézve. Szükséges fejleszteni a \emph{LIKQ} támogatottságát és több típusú osztályok lekérdezését \emph{LINQ} segítségével. Amennyiben az említett fejlesztések megvalósulnak, érdemes a dolgozathoz megvalósított programot fejleszteni és újrafuttatni a jobb eredmények reményében.
+A teljesítménymérés eredménye alapján a Graph Engine nagyméretű modellek kezelésekor rendkívül hatékony. 
