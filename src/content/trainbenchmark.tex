@@ -4,6 +4,8 @@
 
 A Train Benchmark\cite{Szárnyas2017} egy projekt, melynek célja adatbázisrendszerek teljesítményének mérése modellvalidációs forgatókönyvek használatával. A modellvalidációs forgatókönyv 4 fázisból épül fel: beolvasás, ellenőrzés, módosítás, újraellenőrzés. Beolvassuk a modellt, ellenőrizzük, hogy megfelelnek-e bizonyos előre meghatározott kényszernek, ezután eszközölünk rajta valamilyen módosítást (javítunk vagy rontunk a modellen), majd ismét elvégzünk rajta egy ellenőrzést. Ezalatt mérjük, hogy az adatbázis-rendszer milyen gyorsan végzi el ezeket a műveleteket, majd az eredményt összehasonlítjuk.
 
+Ebben a fejezetben a Train Benchmark működésének elvét mutatjuk be. Kezdve a Train Benchmarkban használt modell elemeivel, közöttük lévő kapcsolattal, majd a megfogalmazott kényszerek részletezésével. Ezután a fejlesztési folyamat forgatókönyve, végül pedig azon környezetek (Jena, RDF4J) rövid bemutatása következik, melyeknek tesztjét lefuttattuk.
+
 \section{A Train Benchmark metamodell}
 
 A metamodell egy absztrakt nyelv, mellyel a modellről írhatunk le információkat.\cite{pickametamodeling} Az itt szereplő metamodell meghatározza azt, hogy milyen típusú elemekről milyen információt tárolunk, ezenfelül leírja a közöttük lévő kapcsolatot is.
