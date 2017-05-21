@@ -9,12 +9,18 @@ Az elkészített megoldás Microsoft Windows 7 x64 operációs rendszeren, Visua
 
 \section{A Graph Engine felépítése}
 
-A Graph Engine a számítógépek feladatkörét tekintve három részből áll. Vannak \emph{client}-ek, \emph{proxy}-k és \emph{slave}-k. A \emph{slave}-k hálózatba kötött szerver számítógépek, amik az adattárolásért és a lekérdezések feldolgozásáért felelősek, egymással egy hálózaton kommunikálnak. A \emph{client}-ek felelőssége egy felhasználói felületet adni az adatbázishoz. A \emph{proxy}-k az üzenetek kezelését végzik, de nem feltétlenül szükségesek a kommunikációhoz, a \emph{client}-ek is képesek közvetlenül a szerverrel kommunikálni. A Graph Engine lehetőséget kínál mindezen szerepek egy számítógépen való futtatásához is.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/GraphEngineModel.pdf}
+	\caption{A Graph Engine kommunikációs modellje.}
+	\label{fig:GraphEngineModel}
+\end{figure}
 
+A Graph Engine a számítógépek feladatkörét tekintve három részből áll.\cite{Trinity} Vannak \emph{client}-ek, \emph{proxy}-k és \emph{slave}-k. A \emph{slave}-k hálózatba kötött szerver számítógépek, amik az adattárolásért és a lekérdezések feldolgozásáért felelősek, egymással egy hálózaton kommunikálnak. A \emph{client}-ek felelőssége egy felhasználói felületet adni az adatbázishoz. A \emph{proxy}-k az üzenetek kezelését végzik, de nem feltétlenül szükségesek a kommunikációhoz, a \emph{client}-ek is képesek közvetlenül a szerverrel kommunikálni. A Graph Engine lehetőséget kínál mindezen szerepek egy számítógépen való futtatásához is. Ez a kommunikációs modell a \ref{fig:GraphEngineModel} ábrán látható.
 
 \section{TSL}
 
-A \emph{TSL}, azaz \emph{Trinity Specification Language} a Graph Engine gráfséma-leíró nyelve. Az előre definiált adatstruktúra helyett nagy könnyebbséget kínál azáltal, hogy szerveroldalon az adott alkalmazásra specifikus adatstruktúrát adhatunk meg. Szintaxisát tekintve leginkább a C, \cpp{}  és a \Csh{} nyelvre hasonlít.
+A \emph{TSL}\cite{GraphEngineTSL}, azaz \emph{Trinity Specification Language} a Graph Engine gráfséma-leíró nyelve. Az előre definiált adatstruktúra helyett nagy könnyebbséget kínál azáltal, hogy szerveroldalon az adott alkalmazásra specifikus adatstruktúrát adhatunk meg. Szintaxisát tekintve leginkább a C, \cpp{}  és a \Csh{} nyelvre hasonlít.
 
 A \emph{TSL} lehetőséget kínál sokfajta beépített típus használatára, melyek a következők:
 \begin{itemize}
@@ -65,7 +71,7 @@ A példában egy baráti társaságban lévő emberekről tárolunk adatokat. Ez
 
 \section{Adatelérés}
 
-A Graph Engine a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-okat, melyek az adatolvasást és manipulálást könnyítik meg. Ezzel párhuzamosan létrehoz osztályokat, amiket a Visual Studioban lévő IntelliSense is tud kezelni, megkönnyítve a további implementációs munkát. Az \emph{Accessor}-ok használatát is a fenti példán keresztül mutatjuk be. Fordítás után a következő metódusokat tudjuk használni: 
+A Graph Engine a \texttt{cell} típushoz készít úgynevezett \emph{Accessor}-okat, melyek az adatolvasást és manipulálást könnyítik meg.\cite{GraphEngineAccessors} Ezzel párhuzamosan létrehoz osztályokat, amiket a Visual Studioban lévő IntelliSense is tud kezelni, megkönnyítve a további implementációs munkát. Az \emph{Accessor}-ok használatát is a fenti példán keresztül mutatjuk be. Fordítás után a következő metódusokat tudjuk használni: 
 \begin{itemize}
 	\item \texttt{Global.LocalStorage.IsSzemely(long cellId)} \--- A \emph{cellId} azonosítójú elemről megállapítja, hogy Szemely típusú-e. Visszatérési értéke: \texttt{bool}.
 	\item \texttt{Global.LocalStorage.LoadSzemely(long cellId)} \--- Visszatérési értéke egy Szemely típusú objektum, aminek a CellId-je a függvény bemeneteként megadott paraméter.
@@ -90,7 +96,7 @@ A \emph{Language-Integrated Query}, azaz \emph{LINQ} a .NET 3.5 óta létező sz
 
 A \ref{fig:LINQ} ábrán láthatunk egy példát \emph{LINQ} lekérdezésre. Felépítése hasonló az \emph{SQL} nyelv szintaxisához. A \emph{from, where, orderby, select} kulcsszavaknak a jelentése megegyezik. Legfőbb különbség azonban, hogy míg az \emph{SQL}-nél először azt kell megadni, hogy mit szeretnénk, aztán pedig, hogy honnan, addig a \emph{LINQ}-nél ez fordítva van. Ez nagy előny, mivel így az \emph{IntelliSense} már felajánlja az adott osztály mezőit, függvényeit kiegészítésként, emellett fordítás előtt ellenőrizni lehet az esetleges elgépeléseket. A \emph{select} után megadhatunk \emph{property}-ket, anonym-osztályt, de akár, ahogy a \refstruc{fig:LINQ} mutatja, a teljes osztályt is.
 
-A Graph Engine nem támogatja teljes mértékben a lekérdezéseket. Számunkra a legnagyobb hátrány az, hogy nem használható a \emph{join} operátor és nem lehet különböző típusú cellákat egy lekérdezésbe kapcsolni. Ennek oka ugyanaz, amiért nem lehet egymásba ágyazott \emph{Accessor}-okat használni. Ez pedig az, hogy egy \emph{Accessor} elérésnél az adatbázis egészére elhelyez egy zárat. A \emph{LINQ} pedig a \emph{join} műveletnél mindkét \emph{Selector}-nál megpróbál elhelyezni zárat.
+A Graph Engine nem támogatja teljes mértékben a lekérdezéseket.\cite{GraphEngineLINQ} Számunkra a legnagyobb hátrány az, hogy nem használható a \emph{join} operátor és nem lehet különböző típusú cellákat egy lekérdezésbe kapcsolni. Ennek oka ugyanaz, amiért nem lehet egymásba ágyazott \emph{Accessor}-okat használni. Ez pedig az, hogy egy \emph{Accessor} elérésnél az adatbázis egészére elhelyez egy zárat. A \emph{LINQ} pedig a \emph{join} műveletnél mindkét \emph{Selector}-nál megpróbál elhelyezni zárat.
 
 A \emph{join} művelet hiánya abban az esetben jelenthet problémát, amikor különböző típusú csúcsok között szeretnénk navigálni. Erre a nehézségre és egy lehetséges megoldására mutatunk egy példát a következő szakaszban.
 

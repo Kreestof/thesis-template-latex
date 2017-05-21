@@ -2,12 +2,8 @@
 \chapter{Összefoglalás}
 %----------------------------------------------------------------------------
 
-A következőkben az eredményeket alapul véve összegezzük a Graph Engine előnyeit és hátrányai az \emph{RDF4J}-hez és a \emph{Jena}-hoz viszonyítva. 
-
-A teljesítménymérés eredménye alapján a Graph Engine  kisméretű modellek esetében kevésbé bizonyult hatékonynak, mint a másik két eszköz. Azonban nagyobb méretű modellek esetében a \emph{RouteSensor} kényszer validációihoz tartozó lekérdezésnél teljesítményben utoléri a másik kettőt. Ez azt jelenti, hogy a modellvalidációt és a hibainjektálást vagy javítást hasonló idő alatt végzi el. A tendenciák alapján még nagyobb modellek esetében valószínűsíthető, hogy gyorsabb is lenne.  A beolvasás sebessége viszont lekorlátozza ezeknek a mérhetőségét, így ezt biztosan nem jelenthetjük ki.
-
-Nagy hátrányt jelentett, hogy a modellen végzett validációt és módosításokat mindkét kényszer esetében több lekérdezésben kellett megfogalmazni. Ez folyamatos kommunikációval jár az adatbázis és a kliensoldal között, ami erőforrás-igényes, redundáns és céltalan.
+A Train Benchmark\cite{Szárnyas2017} keretrendszer célja adatbázisrendszerek teljesítményének mérése modellvalidációs forgatókönyvek használatával. Már több eszközre elkészült az implementációja és az ezeken futtatott mérések kiértékelése, illetve az eredmények alapján történő összehasonlításuk. Ezen eszközök közül kettő RDF-gráf alapú, ezért ezekkel foglalkoztunk a továbbiakban. A szakdolgozatban bemutattuk a gráfadatbázisok sajátosságait, a Graph Engine nevű eszköz működését, példákkal illusztrálva, majd elvégeztük a teljesítménymérést a kiválasztott eszközökön, illetve a Graph Engine-hez készített implementációnkon, aztán az eredményt összehasonlítottuk és ez alapján az derült ki, hogy a Graph Engine kisebb méretű modellek esetén minden szempontból elmarad a másik kettőhöz képest, de nagyobb modellek esetén bizonyos műveleteket gyorsabban végez.
 
 \section{Továbbfejlesztési lehetőségek}
 
-A Graph Engine jelenlegi verziójában nem tűnik hatékonyabbnak a másik két tesztelt eszköznél. Ennek ellenére sok potenciállal rendelkezik a jövőre nézve. Szükséges fejleszteni a \emph{LIKQ} támogatottságát és több típusú osztályok lekérdezését \emph{LINQ} segítségével. Amennyiben az említett fejlesztések megvalósulnak, érdemes a dolgozathoz megvalósított programot fejleszteni és újrafuttatni a jobb eredmények reményében.
+A Graph Engine\cite{GraphEngine} jelenlegi verziójában nem tűnik hatékonyabbnak a másik két tesztelt eszköznél. Ennek ellenére sok potenciállal rendelkezik a jövőre nézve. Szükséges fejleszteni a \emph{LIKQ} támogatottságát és több típusú osztályok lekérdezését \emph{LINQ} segítségével. Amennyiben az említett fejlesztések megvalósulnak, érdemes a dolgozathoz megvalósított programot fejleszteni és újrafuttatni a jobb eredmények reményében.

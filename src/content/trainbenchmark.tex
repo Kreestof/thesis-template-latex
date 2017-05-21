@@ -4,25 +4,13 @@
 
 A Train Benchmark\cite{Szárnyas2017} egy projekt, melynek célja adatbázisrendszerek teljesítményének mérése modellvalidációs forgatókönyvek használatával. A modellvalidációs forgatókönyv 4 fázisból épül fel: beolvasás, ellenőrzés, módosítás, újraellenőrzés. Beolvassuk a modellt, ellenőrizzük, hogy megfelelnek-e bizonyos előre meghatározott kényszernek, ezután eszközölünk rajta valamilyen módosítást (javítunk vagy rontunk a modellen), majd ismét elvégzünk rajta egy ellenőrzést. Ezalatt mérjük, hogy az adatbázis-rendszer milyen gyorsan végzi el ezeket a műveleteket, majd az eredményt összehasonlítjuk.
 
-Ebben a fejezetben a Train Benchmark működésének elvét mutatjuk be. Kezdve a Train Benchmarkban használt modell elemeivel, közöttük lévő kapcsolattal, majd a megfogalmazott kényszerek részletezésével. Ezután a fejlesztési folyamat forgatókönyve, végül pedig azon környezetek (Jena, RDF4J) rövid bemutatása következik, melyeknek tesztjét lefuttattuk.
+Ebben a fejezetben a Train Benchmark működésének elvét mutatjuk be. Kezdve a Train Benchmarkban használt modell elemeivel, közöttük lévő kapcsolatokkal, majd a megfogalmazott kényszerek részletezésével. Ezután a fejlesztési folyamat forgatókönyve, végül pedig azon környezetek (Jena, RDF4J) rövid bemutatása következik, melyekhez van elérhető Train Benchmark implementáció, valamint RDF\cite{Wood:14:RCA}-ben tárolt modellek felett képesek futni.
 
 \section{A Train Benchmark metamodell}
 
 A metamodell egy absztrakt nyelv, mellyel a modellről írhatunk le információkat.\cite{pickametamodeling} Az itt szereplő metamodell meghatározza azt, hogy milyen típusú elemekről milyen információt tárolunk, ezenfelül leírja a közöttük lévő kapcsolatot is.
 
-A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait használja fel egy valós probléma szimulálására. A metamodell osztályokból épül fel, amik meghatározzák az adott elemnek az általunk fontos tulajdonságok összességét, ezeket tároljuk. Ezek az osztályok a következők:
-\begin{itemize}
-	\item \emph{RailwayElement}: Minden osztály ennek az osztálynak a leszármazottja. Egyetlen közös tulajdonságot, az egyedi azonosítót tartalmazza.
-	\item \emph{Semaphore}: Jelzi a vonatnak, hogy az adott útszakaszon áthaladhat-e. Az aktuális állapotát tároljuk. (A továbbiakban: szemafor)
-	\item \emph{TrackElement}: A sínpálya legkisebb számunkra fontos alkotóelemei, a \emph{Segment} és a \emph{Switch} ősosztálya.
-	\item \emph{Segment}: Az útnak egy kisebb része, ami már megfigyelhető szenzorok által. A modellben szereplő tulajdonsága a hossza. (A továbbiakban: útszakasz)
-	\item \emph{Switch}: Két útszakasz között helyezkedik el és meghatározza azt, hogy merre halad tovább a vonat, amikor ideér. (A továbbiakban váltó)
-	\item \emph{Route}: Egy vasúti sínpár szakasza két szemafor között. útszakaszokból és váltókból áll össze. Azt tároljuk róla, hogy aktív-e, azaz, hogy az összes váltó olyan állásban van, hogy a vonat ezen az útvonalon halad végig. (A továbbiakban: út)
-	\item \emph{Region}: Szenzorokat, útszakaszokat és váltókat magába foglaló konténer. (A továbbiakban régió)
-	\item \emph{RailwayContainer}: Utakat és a régiókat tartalmazó konténer.
-	\item \emph{Sensor}: A hozzá tartozó útszakaszokat, illetve váltókat monitorozza. (A továbbiakban: szenzor)
-	\item \emph{SwitchPosition}: A váltó az úthoz mért relatív állását mutatja, azaz, hogy a váltónak merre kell állnia, hogy a szegmenseken végighaladó vonat az adott úton haladjon. 
-\end{itemize}
+A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait használja fel egy valós probléma szimulálására. A metamodell osztályokból épül fel, amik meghatározzák az adott elemnek az általunk fontos tulajdonságok összességét, ezeket tároljuk. Az osztályok közötti összeköttetés az elemek valamilyen kapcsolatát jelenti. A Train Benchmark metamodellje a \ref{fig:ModelDiagram} ábrán látható.
 
 \begin{figure}[H]
 	\includegraphics[width=\linewidth, keepaspectratio]{figures/model.pdf}
@@ -30,9 +18,24 @@ A Train Benchmark egy vasúti pályának az elemeit, azok tulajdonságait haszn�
 	\label{fig:ModelDiagram}
 \end{figure}
 
+A metamodell 10 osztályból áll. Ezen osztályokból a \emph{RailwayElement} minden osztálynak az ősosztálya, így nem szerepel a \ref{fig:ModelDiagram} ábrán.
+
+\begin{itemize}
+	\item \emph{RailwayElement}: Minden osztály ennek az osztálynak a leszármazottja. Egyetlen közös tulajdonságot, az egyedi azonosítót tartalmazza.
+	\item \emph{Semaphore}: Jelzi a vonatnak, hogy az adott útszakaszon áthaladhat-e. Az aktuális állapotát tároljuk. (A továbbiakban: szemafor)
+	\item \emph{TrackElement}: A sínpálya legkisebb számunkra fontos alkotóelemei, a \emph{Segment} és a \emph{Switch} ősosztálya.
+	\item \emph{Segment}: Az útnak egy kisebb része, ami már megfigyelhető szenzorok által. A modellben szereplő tulajdonsága a hossza. (A továbbiakban: útszakasz)
+	\item \emph{Switch}: Két útszakasz között helyezkedik el és meghatározza azt, hogy merre halad tovább a vonat, amikor ideér. (A továbbiakban váltó)
+	\item \emph{Route}: Egy vasúti sínpár szakasza két szemafor között. Útszakaszokból és váltókból áll össze. Azt tároljuk róla, hogy aktív-e, azaz, hogy az összes váltó olyan állásban van, hogy a vonat ezen az útvonalon halad végig. (A továbbiakban: út)
+	\item \emph{Region}: Szenzorokat, útszakaszokat és váltókat magába foglaló konténer. (A továbbiakban régió)
+	\item \emph{RailwayContainer}: Utakat és a régiókat tartalmazó konténer.
+	\item \emph{Sensor}: A hozzá tartozó útszakaszokat, illetve váltókat monitorozza. (A továbbiakban: szenzor)
+	\item \emph{SwitchPosition}: A váltó az úthoz mért relatív állását mutatja, azaz, hogy a váltónak merre kell állnia, hogy a szegmenseken végighaladó vonat az adott úton haladjon. 
+\end{itemize}
+
 \section{Kényszerek}
 
-A Train Benchmarkban összesen 6 kényszer teljesülését követelik meg. Ezek között vannak olyan egyszerűek, mint a \emph{PosLength}, ami azt követeli meg, hogy egy szegmens hossza pozitív legyen, és vannak bonyolultabbak, mint a \emph{ConnectedSegment}, ami azt, hogy 6 egymást követő szegmenst ne felügyeljen egy szenzor. Ez utóbbi ellenőrzése egy olyan relációs adatbázisban, ahol minden osztályhoz egy tábla tartozik, 7 tábla összekapcsolását követeli meg.
+A Train Benchmarkban összesen 6 eltérő bonyolultságú és paraméterezésű kényszer segítségével hasonlítja össze az egyes eszközöket. Ezek között vannak olyan egyszerűek, mint a \emph{PosLength}, ami azt követeli meg, hogy egy szegmens hossza pozitív legyen, és vannak bonyolultabbak, mint a \emph{ConnectedSegment}, ami azt, hogy 6 egymást követő szegmenst ne felügyeljen egy szenzor. Ez utóbbi ellenőrzése egy olyan relációs adatbázisban, ahol minden osztályhoz egy tábla tartozik, 7 tábla összekapcsolását követeli meg.
 Két kényszert valósítottunk meg, ezért ezt a kettőt mutatjuk be részletesebben.
 
 \subsection{RouteSensor}
@@ -61,7 +64,7 @@ A \emph{SwitchSet} kényszer teljesülésének feltétele, hogy amikor egy út a
 
 \section{A fejlesztés lépései}
 
-A valóságban egy ilyen modell folyamatosan bővül, azáltal, hogy új sínpályák építését-, a régiek felújítását tervezik. Ezáltal a számítógépes modellt is bővíteni kell, ami programozók feladata. Ilyen esetben előfordulnak hibák, amiket javítani kell. Ennek a szimulálására a Train Benchmark 3 különböző szcenáriót különböztet meg: \emph{Batch}, \emph{Inject}, \emph{Repair}.
+A valóságban egy ilyen modell folyamatosan változik azáltal, hogy a váltó kapcsol, a szemafor állapotot vált, ezt érzékeli a szenzor, stb. Ezáltal a számítógépes modell is módosul. Ilyen esetben előfordulnak hibák, amiket javítani kell. Ennek a szimulálására a Train Benchmark 3 különböző szcenáriót különböztet meg: \emph{Batch}, \emph{Inject}, \emph{Repair}.
 
 \subsection{Batch}
 
@@ -77,14 +80,18 @@ Ebben a fázisban a hibák kijavításának szimulálása zajlik. Itt is a javí
 
 \section{Resource Description Framework}
 
-A \emph{Resource Description Framework} (\emph{RDF}) egy leíró keretrendszer, amelyet adatok reprezentálására alkalmas\cite{Wood:14:RCA}. Elsődleges célja számítógépek közötti információcsere, nem az emberi feldolgozás. Ez egy általános célú keretrendszer, ezáltal különböző alkalmazások között is alkalmas információcserére. Az \emph{RDF} adathármasokat (\emph{triple}) tárol, ami a következőkből épül fel:
+A \emph{Resource Description Framework} (\emph{RDF}) egy leíró keretrendszer, amelyet adatok reprezentálására alkalmas.\cite{Wood:14:RCA} Elsődleges célja számítógépek közötti információcsere, nem az emberi feldolgozás. Ez egy általános célú keretrendszer, ezáltal különböző alkalmazások között is alkalmas információcserére. Az \emph{RDF} adathármasokat (\emph{triple}) tárol, ami a következőkből épül fel:
 \begin{itemize}
 	\item \emph{subject}: Az adathármas alanya, rá vonatkozik a \emph{triple}-ben tárolt adat.
 	\item \emph{predicate}: Tulajdonság, a \emph{subject} és az \emph{object} közötti kapcsolat típusát írja le.
 	\item \emph{object}: A tulajdonság tárgya, leírhat egyszerű tulajdonságot is, de amennyiben a predicate két, a modellben szereplő elem kapcsolatának típusát jelöli, akkor egy másik modellbeli elemet fog jelenteni.
 \end{itemize}
 
-Ez alapján felfoghatjuk az \emph{RDF}-et úgy, mint egy irányított gráfot, melyeknek a csúcsain és élein információt tárolunk. A csúcsok a \emph{subject}-ek és \emph{object}-ek a csúcsok, a \emph{predicate}-ek pedig a köztük lévő élek. Többféle szintaxisa létezik, ebből a \emph{Turtle}-t emeljük ki, mert a Train Benchmark \emph{RDF} alapú eszközei ezt használják. A \emph{Turtle} a \emph{subject}-et, \emph{predicate}-et és \emph{object}-et szóközzel választja el egymástól és egy hármasnak a leírása ponttal végződik.\cite{Prud'hommeaux:14:RT} Emellett lehetőség van egy \emph{subject}-ről több \emph{predicate}-et és \emph{object}-et tárolni úgy, hogy az első sor végére (melyben a \emph{subject} szerepel) pontosvesszőt teszünk, majd a további sorokban nem írjuk le fölöslegesen a \emph{subject}-et. Az ilyen felsorolás legvégére pontot kell tennünk.
+Ez alapján felfoghatjuk az \emph{RDF}-et úgy, mint egy irányított gráfot, melyeknek a csúcsain és élein információt tárolunk. A csúcsok a \emph{subject}-ek és \emph{object}-ek a csúcsok, a \emph{predicate}-ek pedig a köztük lévő élek. Többféle szintaxisa létezik, ebből a \emph{Turtle}-t emeljük ki, mert a Train Benchmark \emph{RDF} alapú eszközei ezt használják.
+
+\subsubsection{Turtle}
+
+A \emph{Turtle} a \emph{subject}-et, \emph{predicate}-et és \emph{object}-et szóközzel választja el egymástól és egy hármasnak a leírása ponttal végződik.\cite{Prud'hommeaux:14:RT} Emellett lehetőség van egy \emph{subject}-ről több \emph{predicate}-et és \emph{object}-et tárolni úgy, hogy az első sor végére (melyben a \emph{subject} szerepel) pontosvesszőt teszünk, majd a további sorokban nem írjuk le fölöslegesen a \emph{subject}-et. Az ilyen felsorolás legvégére pontot kell tennünk.
 %TODO: ábra
 \begin{figure}[H]
 	\centering
@@ -94,8 +101,6 @@ Ez alapján felfoghatjuk az \emph{RDF}-et úgy, mint egy irányított gráfot, m
 \end{figure}
 
 A Train Benchmark modelljének leírása \emph{Turtle}-ben a \ref{fig:Turtle} ábrán látható. A \emph{subject} mindig egy szám, ami egy elem egyedi azonosítója, a \emph{RailwayElement} ősosztály egyetlen tulajdonsága. A \emph{predicate} meghatározza azt, hogy a \emph{triple} az elem típusát, tulajdonságát vagy két elem közötti kapcsolatot ír le. Amennyiben \texttt{a} az értéke, akkor a \emph{subject} egy típust fog leírni (például \emph{Route} vagy \emph{Semaphore}). Egy elem leírása mindig azzal kezdődik, hogy meghatározza a típusát. Ezután felsorolás-szerűen megadja a tulajdonságait (active vagy signal), mégpedig úgy, hogy a \emph{predicate} a tulajdonság nevét, az \emph{object} pedig az értékét. Ezután leírja az egyes elemek közötti kapcsolatot. Ebben az esetben a \emph{predicate} a kapcsolat neve, míg a \emph{subject} a cél objektum azonosítója. 
-
-
 
 \section{Létező Train Benchmark implementációk}
 

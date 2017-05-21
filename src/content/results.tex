@@ -71,7 +71,7 @@ A \emph{Read and Check} diagram az előző kettő összegét mutatja. A beolvas�
 
 \subsubsection{Transformation}
 
-A hibainjektálás során előre nem várt eredményt kaptunk. A modell növekedésével a Graph Engine teljesítménye nőtt, a futási idő rövidebb lett. Ennek oka, hogy kisméretű modelleken több lekérdezés kellett, hogy találjon olyan \emph{requires} élt, amit el lehet távolítani. Az \emph{RDF4J} és a \emph{Jena} esetében a modell mérete nem befolyásolta az eredményt. A \emph{Read} szakasz lassú futása miatt a legnagyobb méretű modelleken nem volt tesztelhető, hogy meddig csökkenne tovább.
+A hibainjektálás során előre nem várt eredményt kaptunk. A modell növekedésével a Graph Engine teljesítménye nőtt, a futási idő rövidebb lett. Ennek oka, hogy kisméretű modelleken több lekérdezés kellett, hogy találjon olyan \emph{requires} élt, amit el lehet távolítani. Ez a teljesítménynövekedés egy idő után nem csökkenhet tovább, ugyanis a művelet minden esetben számításigényes. A csökkenés alsó korlátjának megállapításához további vizsgálatok szükségesek. A \emph{Read} szakasz lassú futása miatt a legnagyobb méretű modelleken nem volt tesztelhető, hogy meddig csökkenne tovább. Az \emph{RDF4J} és a \emph{Jena} esetében a modell mérete nem befolyásolta az eredményt. 
 
 \subsubsection{Recheck}
 
@@ -130,5 +130,13 @@ A \ref{fig:RouteSensorRepairResultTransformation} ábrán a \emph{Transformation
 \section{\emph{Performance Profiler}}
 
 A \emph{Visual Studio} beépített \emph{Performance Profiler} funkciójával elemezni lehet egy \emph{.NET} platformon futó programot. Ezt arra használtuk, hogy megállapítsuk melyik az a függvényhívás, ahol a program a legtöbb időt tölti. Emellett lehetőség van azt is vizsgálni, hogy egy függvény hányszor hívódott meg. A \emph{Profiler} eredménye azt mutatta, hogy a \texttt{System.Collections.IEnumerator.MoveNext()} függvény végrehajtásával tölti a legtöbb időt a processzor. Ez egy \emph{LINQ} lekérdezés után az eredményeken való végigiterálásnál hívódik. Második helyen az \emph{TurtleParser} \texttt{Load()} metódusa áll, ami a \emph{dotNetRDF} könyvtár beolvasásért felelős függvénye.
+
+\section{Az eredmények összefoglalása}
+
+A következőkben az eredményeket alapul véve összegezzük a Graph Engine előnyeit és hátrányai az \emph{RDF4J}-hez és a \emph{Jena}-hoz viszonyítva. 
+
+A teljesítménymérés eredménye alapján a Graph Engine  kisméretű modellek esetében kevésbé bizonyult hatékonynak, mint a másik két eszköz. Azonban nagyobb méretű modellek esetében a \emph{RouteSensor} kényszer validációihoz tartozó lekérdezésnél teljesítményben utoléri a másik kettőt. Ez azt jelenti, hogy a modellvalidációt és a hibainjektálást vagy javítást hasonló idő alatt végzi el. A tendenciák alapján még nagyobb modellek esetében valószínűsíthető, hogy gyorsabb is lenne.  A beolvasás sebessége viszont lekorlátozza ezeknek a mérhetőségét, így ezt biztosan nem jelenthetjük ki.
+
+Nagy hátrányt jelentett, hogy a modellen végzett validációt és módosításokat mindkét kényszer esetében több lekérdezésben kellett megfogalmazni. Ez folyamatos kommunikációval jár az adatbázis és a kliensoldal között, ami erőforrás-igényes, redundáns és céltalan.
 
 %\includepdf[pagecommand={}]{figures/times-Repair.pdf}
